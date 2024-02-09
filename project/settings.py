@@ -113,8 +113,8 @@ DATABASES = {
         'NAME': 'BDFUT',
         'USER': 'postgres',
         'PASSWORD': '*CAABbgaAC*AfceGFABAeAE*d-*55C24',
-        'HOST': 'localhost',  # si tienes otra dirección host debes remplazar esta
-        'PORT': '5432',  # si lo dejas vacío tomará el puerto por default
+        'HOST': 'roundhouse.proxy.rlwy.net',  # si tienes otra dirección host debes remplazar esta
+        'PORT': '55021',  # si lo dejas vacío tomará el puerto por default
     }
 }
 
