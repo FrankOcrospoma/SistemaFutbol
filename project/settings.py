@@ -112,9 +112,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'BDFUT',
         'USER': 'postgres',
-        'PASSWORD': '*frank2003',
-        'HOST': 'roundhouse.proxy.rlwy.net',  # si tienes otra dirección host debes remplazar esta
-        'PORT': '55021',  # si lo dejas vacío tomará el puerto por default
+        'PASSWORD': 'frank2003',
+        'PGHOST': 'roundhouse.proxy.rlwy.net',  # si tienes otra dirección host debes remplazar esta
+        'PGPORT': '55021',  # si lo dejas vacío tomará el puerto por default
     }
 }
 
