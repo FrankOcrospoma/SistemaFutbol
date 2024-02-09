@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+{% block title %} Lista de sedes por organización {% endblock %}
+{% block content %}
+
+<section class="content-info" style="margin-top: 20px; margin-bottom: 20px">
+    <div class="container">
+        <div class="row">
+            <!-- Combobox para filtrar por tipo de organización -->
+            <div class="col-md-12">
+                <h2>Reporte Sedes por competición</h2>
+                <form method="get" action="{% url 'sedes/filtrar' %}">
+                    <div class="form-group">
+                        <label for="competicionId">Competición:</label>
+                        <select name="competicionId" id="competicionSelect" class="form-control">
+                            <option value="">--- Selecciona Competición ---</option> <!-- Opción por defecto vacía -->
+                            {% for competicion in competiciones %}
+                                <option value="{{ competicion.min_id }}"
+                                    {% if competicion.min_id|stringformat:"s" == request.GET.competicionId %}
+                                        selected
+                                    {% endif %}>
+                                    {{ competicion.nombre }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <!-- Agrega un elemento <h2> para mostrar el nombre de la competición seleccionada -->
+                <div class="col-md-12 text-center">
+                    {% if competicion_seleccionada %}
+                        <h2 class="text-center">Competición Seleccionada: {{ competicion_seleccionada.nombre }}</h2>
+                        {% if competicion_seleccionada.logo_competicion %}
+                            <img src="{{ competicion_seleccionada.logo_competicion.url }}" alt="{{ competicion_seleccionada.nombre }} Logo" class="img-fluid w-25 mx-auto d-block">
+                        {% endif %}
+                    {% endif %}
+                </div>
+                
+                
+                
+            <!-- Tabla de sedes -->
+            <div class="col-md-12">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>N°</th>
+                            <th>Sede</th>
+                            <th>Alias</th>
+                            <th>Ciudad</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sede in sedes %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td><a href="{% url 'detalle_sede' sede.sede_id %}">{{ sede.nombre }}</a></td>
+                                <td>{{ sede.alias }}</a></td>
+                                <td>{{ sede.ciudad_id.nombre }}</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Script JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Obtén el elemento del combo box por su ID
+    var competicionSelect = document.getElementById('competicionSelect');
+
+    // Agrega un evento para detectar cambios en la selección
+    competicionSelect.addEventListener('change', function() {
+        // Obtén el valor seleccionado
+        var selectedValue = competicionSelect.value;
+
+        // Redirige a la URL de filtración con el valor seleccionado como parámetro
+        window.location.href = "{% url 'sedes/filtrar' %}?competicionId=" + selectedValue;
+    });
+});
+</script>
+
+{% endblock %}

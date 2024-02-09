@@ -1,0 +1,563 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+
+{% block title %} Cronología {% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-xxx..." crossorigin="anonymous" />
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+<style>
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 500px;
+    margin: 0; /* Agregado para eliminar el margen */
+    box-sizing: border-box; /* Agregado para incluir el borde y el relleno en el ancho total */
+}
+.imso_gf__so-c3 {
+    grid-column: 3; /* Esto establecerá que el elemento se coloque en la tercera columna de un contenedor con display: grid; */
+}
+
+    .card-header {
+        background-color: #f5f5f5;
+        padding: 10px;
+        text-align: center;
+    }
+
+    .card-body {
+        padding: 20px;
+        
+    }
+
+    .team-info {
+        margin-top: 10px;
+    }
+
+    .team-name {
+        margin-top: 5px;
+        font-weight: bold;
+    }
+
+    .score {
+        font-size: 24px;
+        margin: 15px 0;
+        font-weight: bold;
+
+    }
+
+/* Estilo mejorado para el botón "Ver" */
+.encuentro-link {
+       
+       background-color: #09ff00;
+       color: #fff;
+       border: none;
+       border-radius: 5px;
+       padding: 7px 20px;
+       text-decoration: none;
+       transition: background-color 0.2s;
+     
+   }
+
+   .encuentro-link:hover {
+       color: #fff;
+       background-color: #8aff86;
+       text-decoration: none;
+   }
+
+
+
+
+
+.events {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.event-penales {
+    color: #888;
+    font-size: 12px;
+    position: relative; /* Agregado para posicionar de forma relativa */
+    white-space: nowrap; /* Impide que el texto se divida en múltiples líneas */
+}
+
+.event-info {
+    color: #888;
+    font-size: 12px;
+    position: relative; /* Agregado para posicionar de forma relativa */
+    white-space: nowrap; /* Impide que el texto se divida en múltiples líneas */
+}
+
+.event-info .event-player,
+.event-info .event-minute {
+    display: inline-block; /* Mantiene el nombre del jugador y el minuto en la misma línea */
+}
+
+.event-info .event-minute {
+    font-weight: bold;
+    margin-left: 5px; /* Agregado un margen entre el nombre del jugador y el minuto */
+}
+
+
+    .event-minute {
+        font-weight: bold;
+    }
+
+    .event-type {
+        color: #28a745;  /* Color verde para el tipo de evento (Gol) */
+    }
+
+    /* Nueva regla para la línea horizontal */
+    .separator-line {
+        border-top: 1px solid #ddd;
+
+    }
+
+
+
+        /* Agrega un nuevo estilo para centrar las cards de eventos individuales */
+        .event-card {
+        margin: 0 auto;
+        max-width: 500px; /* Puedes ajustar el ancho máximo según tus preferencias */
+        
+    }
+    img.logo-equipo {
+    width: 100%;
+    height: auto;
+} 
+
+.table,
+.table td,
+.table th {
+    border: none;
+}
+/* Alinea el contenedor en el centro y lo mantiene fijo */
+.goal-icon-container {
+        position: absolute;
+        
+    }
+        /* Nuevo estilo para el texto "En vivo" con subrayado y efecto de movimiento realista */
+        .live-text {
+        position: relative;
+        display: inline-block;
+        font-size: 1px;
+    }
+
+    .live-text::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -3px; /* Ajusta la posición del subrayado */
+        width: 100%;
+        height: 2px; /* Altura del subrayado */
+        background-color: #09ff00; /* Mismo color que el botón "En vivo" */
+        display: block;
+        animation: liveTextAnimation 2s infinite linear; /* Ajusta la duración de la animación */
+        transform-origin: 0% 100%; /* Ajusta el punto de origen de la transformación */
+        transform-box: 0% 100%;;
+    }
+
+    @keyframes liveTextAnimation {
+        0%, 100% {
+            transform: scaleX(0);
+        }
+        25%, 75% {
+            transform: scaleX(1);
+        }
+        50% {
+            transform: scaleX(0);
+            transform-origin: 100% 50%; /* Cambia el punto de origen para la siguiente iteración */
+        }
+    }
+    
+</style>
+
+<body  data-encuentro-id="{{ encuentro.encuentro_id }}">
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <h1>Cronología del Encuentro</h1>
+        </div>
+        <div class="col-md-4">
+            <div class="breadcrumbs">
+                <ul>
+                    <li><a style="text-decoration: none;" href="javascript:history.back()">Volver</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="recent-results results-page">
+        <div class="info-results">
+            <ul>
+                <li class="text-center">
+                    <div class="card" style="width: 700px; margin-left: 40%;">
+                        <div class="card-header" style="  height: 55 px;display: flex; justify-content: space-between;">
+                            {% if encuentro.estado_jugado == 'E' %}
+                            <span >{{ encuentro.competicion_id }}</span><span style="font-size: 15px;" class="date live-text">En vivo</span>
+                            <a href="/tvVivo/{{encuentro.encuentro_id}}"  class="encuentro-link" style="font-size: 12px;"> <i class="fas fa-eye">&nbsp;</i>  Ver</a>
+                            </a>
+                            {% elif encuentro.estado_jugado == 'F' %}
+                            <span class="date">{{ encuentro.competicion_id }} &middot; {{ encuentro.fecha | date:'d/n/y' }}</span>
+                            <span class="date" style="font-size: 15px; margin-left: auto;">
+                                 Finalizado
+                            </span>
+                            {% else %}
+                            <span class="date">{{ encuentro.competicion_id }} {{ encuentro.fecha | date:'D, d/m, g:i a' }}</span>
+                            {% endif %}
+
+
+                            
+                        </div>
+                        <div class="card-body" style="display: flex; align-items: center; justify-content: space-around;">
+                            <div class="team-info">
+                                {% if encuentro.equipo_local.tipo_equipo_id.descripcion == 'CLUB' %}
+                                    <img src="{{equipo_local.logo.url}}" alt="" loading="lazy" style="width: 50px;"> 
+                                    <p style="margin-top: 15px;"class="team-name">{{ equipo_local.nombre }}</p>
+                                {% else %}
+                                    <img src="{{equipo_local.sede_id.ciudad_id.pais_id.logo_bandera.url}}" alt="" loading="lazy" style="width: 50px; border:  1px solid #dedede;">
+                                    <p style="margin-top: 15px;"  class="team-name">{{ equipo_local.nombre }}</p>
+                                {% endif %}
+                                </div>
+                                &nbsp;
+                            {% if encuentro.estado_jugado == 'F' or encuentro.estado_jugado == 'E' %}
+
+                            
+                            <span style="font-size: 40px; position: absolute; top: 50px;" class="score">
+                                {{ descripcion_local.goles }}&nbsp;&nbsp; &nbsp;&nbsp;  -  &nbsp;&nbsp;&nbsp;&nbsp; {{ descripcion_visita.goles }}
+                            </span>
+                            
+                            
+                            {% else %}
+                            
+                            <span class="score">
+                                <b>VS</b>
+                            </span>
+                            {% endif %}
+                            &nbsp;
+
+                            <div class="team-info">
+                                {% if encuentro.equipo_visita.tipo_equipo_id.descripcion == 'CLUB' %}
+                                    <img src="{{equipo_visita.logo.url}}" alt="" loading="lazy" style="width: 50px;"> 
+                                    <p style="margin-top: 15px;"class="team-name">{{ equipo_visita.nombre }}</p>
+                                {% else %}
+                                    <img src="{{equipo_visita.sede_id.ciudad_id.pais_id.logo_bandera.url}}" alt="" loading="lazy" style="width: 50px; border:  1px solid #dedede;">
+                                    <p style="margin-top: 15px;"class="team-name">{{ equipo_visita.nombre }}</p>
+                                {% endif %}
+
+                            </div>
+                            
+                        </div>
+                        {% if ronda_penal %}
+                        <div class="event-penales" style=" font-size: 15px; display: flex; text-align: center; justify-content: center; top: -50px;">
+                            <p>Penales: {{conteo_gol_local}} - {{conteo_gol_visita}} </p>                     
+                        </div>
+                        {% endif %}
+                        {% if encuentro.fase.nombre == 'FASE DE GRUPOS' %}
+                            <div class="event-info" style="  font-size: 15px; display: flex; text-align: center; justify-content: center; margin-top: -55px;">
+                                <p>{{ encuentro.fase }} &middot; {{ encuentro.grupo }}</p>                     
+                            </div>
+                        {% else %}
+                        <div class="event-info" style=" font-size: 15px;display: flex; text-align: center; justify-content: center; margin-top: -55px;">
+                            <p>{{ encuentro.fase }}</p>                     
+                        </div>
+                        {% endif %}
+
+                        {% if eventos_todos %}
+                        <!-- Línea horizontal como separador -->
+                        <hr class="separator-line">
+                        <!-- Agregar eventos debajo de la línea horizontal --> 
+                        <div class="card-body" style="display: flex; justify-content: space-around;">
+                            <div class="events" style="text-align: left; margin-right: 150px">
+                                {% for evento_local in eventos_local|dictsort:"tiempo" %}
+                                    {% if evento_local.tipo_evento_id.nombre == "GOL" or evento_local.tipo_evento_id.nombre == "GOL PENAL" %}
+                                        <p class="event-info">
+                                            {% for jugadores in list_jugadores %}
+                                                {% if jugadores.equipo == 'LOCAL' %}
+                                                    <span class="event-player">{{ jugadores.jugador }}</span>
+                                                    <span class="event-minute">{{ jugadores.tiempos }}</span>
+                                                    <br> <!-- Agrega un salto de línea después de cada evento -->
+                                                {% endif %}
+                                            {% endfor %}
+                                        </p>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            
+                            
+                           
+                            {% if estado_gol == True%}
+                            <div class="goal-icon-container">
+                                <i class="fas fa-futbol text-black"></i>
+                            </div>
+                            {% endif %}
+                        
+                        
+                         
+                     
+                            <div class="events" style="text-align: right;">
+                                {% for evento_visita in eventos_visita|dictsort:"tiempo" %}
+                                {% if evento_visita.tipo_evento_id.nombre == "GOL" or evento_visita.tipo_evento_id.nombre == "GOL PENAL" %}
+                                    <p class="event-info">
+                                        {% for jugadores in list_jugadores %}
+                                            {% if jugadores.equipo == 'VISITA' %}
+                                                <span class="event-player">{{ jugadores.jugador }}</span>
+                                                <span class="event-minute">{{ jugadores.tiempos }}</span>
+                                                <br> <!-- Agrega un salto de línea después de cada evento -->
+                                            {% endif %}
+                                        {% endfor %}
+                                    </p>
+                                {% endif %}
+                            {% endfor %}
+                            </div>
+                        </div>
+                                   
+                        <div class="card-body event-group" style="display: flex; align-items: center; justify-content: space-around;">
+                            <div class="events">
+                                {% for evento_local in eventos_local|dictsort:"tiempo" %}
+                                    {% if evento_local.tipo_evento_id.nombre == "TARJETA ROJA" %}
+                                        <p class="event-info"style="margin-right: 150px; ">
+                                            <span class="event-player">{{ evento_local.alineacion_id1.contrato_id.persona.alias }}</span>
+                                            <span class="event-minute">{{ evento_local.tiempo }}'</span>
+                                        </p>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            {% if estado_tarjeta == True%}
+
+                            <div class="goal-icon-container">
+                                <i class="fas fa-square text-danger"></i>
+                            </div>
+                            {% endif %}
+
+                            <div class="events">
+                                {% for evento_visita in eventos_visita|dictsort:"tiempo" %}
+                                    {% if evento_visita.tipo_evento_id.nombre == "TARJETA ROJA" %}
+                                        <p class="event-info">
+                                            <span class="event-player">{{ evento_visita.alineacion_id1.contrato_id.persona.alias }}</span>
+                                            <span class="event-minute">{{ evento_visita.tiempo }}'</span>
+                                        </p>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- Mostrar eventos uno a uno en cards -->
+<!-- Agrega un contenedor para los eventos con el ID "eventos-container" -->
+
+<div class="container">
+    <div class="recent-results results-page event-cards-container">
+        {% if ronda_penal %}
+        <table>
+            <tbody>
+                <tr class="imso_gf__so-tr">
+                    <td class="imso_gf__so-txt-c imso_gf__so-lc imso_gf__so-txt">{{equipo_local}}</td>
+                    {% if encuentro.equipo_local.tipo_equipo_id.descripcion == 'CLUB' %}
+                    <td class="imso_gf__so-img-c"><img class="imso_gf__so-icon"
+                        src="{{equipo_local.logo.url}}"
+                        alt=""></td>
+                    <td class="imso_gf__so-img-c"><img class="imso_gf__so-icon"
+                        src="{{equipo_visita.logo.url}}"
+                            alt=""></td>
+                    {% else %}
+                    <td class="imso_gf__so-img-c"><img class="imso_gf__so-icon"
+                        src="{{equipo_local.sede_id.ciudad_id.pais_id.logo_bandera.url}}"
+                        alt=""></td>
+                    <td class="imso_gf__so-img-c"><img class="imso_gf__so-icon"
+                        src="{{equipo_visita.sede_id.ciudad_id.pais_id.logo_bandera.url}}"
+                            alt=""></td>
+                    {% endif %}
+
+
+                    <td class="imso_gf__so-txt-c imso_gf__so-rc imso_gf__so-txt">{{equipo_visita}}</td>
+                </tr>
+                {% for jugador_penal in jugadores_penales reversed %}
+
+                        <tr class="imso_gf__so-tr">
+                            <td class="imso_gf__so-lc imso_gf__so-c-tb imso_gf__so-txt-c">
+                                <div class="imso_gf__in-card-yld">
+                                    <div class="imso_gf__pl-lnm imso-hide-overflow imso-loa">
+                                        {{ jugador_penal.local }}
+                                    </div>
+                                
+
+                                </div>
+                                <div class="imso_gf__so-txt"><span>{% if jugador_penal.gol_local == 'GOL RONDA PENAL' %} GOL </span><span>&nbsp;(<span><span
+                                    class="imso_gf__nemphi">{{jugador_penal.goles_local}}</span><span class="imso_gf__nemphi"> -
+                                </span><span class="imso_gf__emphi">{{jugador_penal.goles_visita_primero}}</span></span>)</span> {% elif jugador_penal.gol_local == '' %} {% else %} ERRRADO </span><span>&nbsp;(<span><span
+                                    class="imso_gf__nemphi">{{jugador_penal.goles_local}}</span><span class="imso_gf__nemphi"> -
+                                </span><span class="imso_gf__emphi">{{jugador_penal.goles_visita_primero}}</span></span>)</span> {% endif %}</div>
+                            </td>
+                         
+                            <td>
+                                <img style="border: none;" src="{% if jugador_penal.gol_local == 'GOL RONDA PENAL' %}http://ssl.gstatic.com/onebox/sports/game_feed/pens_goal_icon.svg{% elif jugador_penal.gol_local == '' %}{% else %}http://ssl.gstatic.com/onebox/sports/game_feed/pens_miss_icon.svg{% endif %}" alt="">
+                                </td>                              
+                       
+                            <td class="imso_gf__so-lc imso_gf__so-c-tb imso_gf__so-txt-c">
+                                <img style="border: none;" src="{% if jugador_penal.gol_visita == 'GOL RONDA PENAL' %}http://ssl.gstatic.com/onebox/sports/game_feed/pens_goal_icon.svg{% elif jugador_penal.gol_visita == '' %}{% else %}http://ssl.gstatic.com/onebox/sports/game_feed/pens_miss_icon.svg{% endif %}" alt="">
+                            </td>
+
+                            <td >
+                                <div class="imso_gf__in-card-yld">
+                                    <div class="imso_gf__pl-lnm imso-hide-overflow imso-loa">  {{ jugador_penal.visita }}</div>                           
+                                </div>
+                                <div class="imso_gf__so-txt"><span>{% if jugador_penal.gol_visita == 'GOL RONDA PENAL' %} GOL </span><span>&nbsp;(<span><span
+                                    class="imso_gf__nemphi">{{jugador_penal.goles_local_primero}}</span><span class="imso_gf__nemphi"> -
+                                </span><span class="imso_gf__emphi">{{jugador_penal.goles_visita}}</span></span>)</span> {% elif jugador_penal.gol_visita == '' %} {% else %} ERRRADO </span><span>&nbsp;(<span><span
+                                    class="imso_gf__nemphi">{{jugador_penal.goles_local_primero}}</span><span class="imso_gf__nemphi"> -
+                                </span><span class="imso_gf__emphi">{{jugador_penal.goles_visita}}</span></span>)</span>{% endif %}</div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+
+            </tbody>
+        </table>
+      
+        {% endif %}
+<BR></BR>
+        <table class="table">
+            <div>
+
+            </div>
+          
+            <tbody>
+                {% for evento in eventos_todos reversed %}
+                {% if evento.tipo_evento_id.nombre != "GOL RONDA PENAL" and evento.tipo_evento_id.nombre != "NO GOL RONDA PENAL" %}
+           
+                <tr>
+                    <td>{{ evento.tiempo }}'</td>
+
+                    <td>
+                        {% if evento.tipo_evento_id.nombre == "TARJETA ROJA" %}
+                        <i class="fas fa-square text-danger"></i> TARJETA ROJA
+                    {% elif evento.tipo_evento_id.nombre == "GOL" %}
+                        <i class="fas fa-futbol text-success"></i> ¡GOOOOOOL! 
+                    {% elif evento.tipo_evento_id.nombre == "GOL PENAL" %}
+                        <i class="fas fa-futbol text-success"></i> ¡GOL DE PENAL! 
+                    {% elif evento.tipo_evento_id.nombre == "TARJETA AMARILLA" %}
+                        <i class="fas fa-square text-warning"></i> TARJETA AMARILLA
+                    {% elif evento.tipo_evento_id.nombre == "CAMBIO DE JUGADOR" %}
+                        <i class="fas fa-exchange-alt text-primary"></i> CAMBIO
+                    {% elif evento.tipo_evento_id.nombre == "GOL ANULADO" %}
+                        <i class="fas fa-futbol text-danger"></i> GOL ANULADO
+                    {% endif %}
+                    
+                    
+                    </td>
+
+                    <td>
+                     
+                            {% if evento.tipo_evento_id.nombre == "CAMBIO DE JUGADOR" %}
+                            
+                            <span style="color: green;"> ENTRA: <i class="fas fa-arrow-up" style="color: green;"></i></span>
+                            <span class="event-player"> {{ evento.alineacion_id2.contrato_id.persona }}</span>
+                            <span style="color: red;"> SALE: <i class="fas fa-arrow-down" style="color: red;"></i></span>
+                            <span class="event-player"> {{ evento.alineacion_id1.contrato_id.persona }}</span>
+                            {% elif evento.tipo_evento_id.nombre == "TARJETA AMARILLA" %}
+                            <span>{{ evento.alineacion_id1.contrato_id.persona }} por falta contra {{ evento.alineacion_id2.contrato_id.persona }}</span>
+                            {% elif evento.tipo_evento_id.nombre == "TARJETA ROJA" %}
+                            <span>{{ evento.alineacion_id1.contrato_id.persona }} por falta contra {{ evento.alineacion_id2.contrato_id.persona }}</span>
+                            {% elif evento.tipo_evento_id.nombre == "GOL ANULADO" %}
+                            <span>{{ evento.alineacion_id1.contrato_id.persona }} </span>
+                            {% else %}
+                                <span>{{ evento.alineacion_id1.contrato_id.persona }} contra el arco de {{ evento.alineacion_id2.contrato_id.persona }}</span>
+                            {% endif %}
+                      
+                    </td>
+                    
+                    <td>
+
+                        {% if evento.evento_equipo == True %}
+                            {% if equipo_local.tipo_equipo_id.descripcion == 'CLUB' %}
+                                <img src="{{equipo_local.logo.url}}" alt="" loading="lazy" style="width: 50px;">
+                            {% else %}
+                                <img src="{{equipo_local.sede_id.ciudad_id.pais_id.logo_bandera.url}}" alt="" loading="lazy" style="width: 50px;">
+                            {% endif %}
+                        {% else %}
+                            {% if equipo_local.tipo_equipo_id.descripcion == 'CLUB' %}
+                                <img src="{{equipo_visita.logo.url}}" alt="" loading="lazy" style="width: 50px;">
+                            {% else %}
+                                <img src="{{equipo_visita.sede_id.ciudad_id.pais_id.logo_bandera.url}}" alt="" loading="lazy" style="width: 50px;">
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endif %}
+
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<BR></BR>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<!-- Asegúrate de incluir jQuery en tu proyecto -->
+
+<script>
+
+    $(document).ready(function () {
+        function ocultarDuplicados() {
+            var jugadoresMostrados = [];
+
+            $(".event-info").each(function () {
+                var jugador = $(this).find(".event-player").text();
+
+                if (jugadoresMostrados.includes(jugador) || $(this).hasClass("duplicado-oculto")) {
+                    // Si el jugador ya se ha mostrado o el elemento tiene la clase "duplicado-oculto", oculta el elemento
+                    $(this).hide().addClass("duplicado-oculto");
+                } else {
+                    // Agrega el jugador a la lista de jugadores mostrados y muestra el elemento
+                    jugadoresMostrados.push(jugador);
+                    $(this).show();
+                }
+            });
+        }
+
+
+        function actualizarPagina() {
+            // Cargar la página actual sin caché
+            $.ajax({
+                url: window.location.href,
+                type: 'GET',
+                cache: false,
+                success: function (data) {
+                    // Actualizar el contenido de la página con la respuesta
+                    var nuevoContenido = $(data);
+
+                    // Actualizar contenedor principal
+                    var contenedorPrincipal = nuevoContenido.find('.recent-results.results-page');
+                    $('.recent-results.results-page').html(contenedorPrincipal.html());
+
+                    // Actualizar contenedor de eventos individuales
+                    var contenedorEventos = nuevoContenido.find('.event-cards-container');
+                    $('.event-cards-container').html(contenedorEventos.html());
+
+                    // Ocultar duplicados después de actualizar la página
+                    ocultarDuplicados();
+                },
+            });
+        }
+
+
+        // Ocultar duplicados al cargar la página inicialmente
+            ocultarDuplicados();
+        // Actualizar la página cada 2 segundos
+        setInterval(actualizarPagina, 2000);
+    });
+</script>
+
+
+</body>
+{% endblock %}

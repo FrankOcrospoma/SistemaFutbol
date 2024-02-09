@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+{% block title %} Lista de organizaciones por tipo de organización {% endblock %}
+{% block content %}
+
+<section class="content-info" style="margin-top: 20px; margin-bottom: 20px">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <h1>Reporte de Organizaciones por Tipo de Organización</h1>
+            </div>
+            <!-- Combobox para filtrar por tipo de organización -->
+            <div class="col-md-12">
+                <form method="get" action="{% url 'filtrar/organizaciones' %}">
+                    <div class="form-group">
+                        <label for="tipo">Tipo de Organización:</label>
+                        <select name="tipo" id="tipo" class="form-control" onchange="this.form.submit()">
+                            <option value="">Todos</option>
+                            {% for tipo, label in tipos_organizacion %}
+                                <option value="{{ tipo }}" {% if tipo == tipo_seleccionado %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>   
+            </div>
+            <!-- Tabla de organizaciones -->
+            <div class="col-md-12">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>N°</th>
+                            <th>Nombre Oficial</th>
+                            <th>Siglas</th>
+                            <th>Descripción</th>
+                            <th>Logo</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for organizacion in organizaciones %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ organizacion.nombre_oficial }}</a></td>
+                            <td>{{ organizacion.siglas }}</td>
+                            <td>{{ organizacion.descripcion }}</td>
+                            <td><img class="organizacion-logo" src="{{ organizacion.logo.url }}" alt="Logo de {{ organizacion.nombre_oficial }}"  width="100"/></td>
+                            <td>
+                                <a href="organizacion/{{ organizacion.organizacion_id }}">
+                                    <i class="fa fa-eye fa-2x" style="position: static;"></i>
+                                </a>
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+                    </tbody>
+                   
+                </table>
+            </div>
+        </div>
+    </div>
+   
+
+</section>
+{% endblock %}

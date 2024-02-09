@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+{% block title %} Detalle de la Sede {% endblock %}
+{% block content %}
+
+<section class="content-info" style="margin-top: 20px; margin-bottom: 20px">
+    <div class="container">
+        <!-- Título de la sede -->
+        <h1>{{ sede.nombre }}</h1>
+        
+        <!-- Imagen de la sede -->
+        <div class="sede-imagen">
+            {% if sede.imagen %}
+                <img src="{{ sede.imagen.url }}" alt="Imagen de {{ sede.nombre }}">
+            {% else %}
+                <p>No hay imagen disponible.</p>
+            {% endif %}
+        </div>
+        
+        <!-- Descripción de la sede -->
+        <div class="sede-descripcion">
+            <h2>Descripción</h2>
+            <p><strong>Alias:</strong> {{ sede.alias }}</p>
+            <p><strong>Capacidad:</strong> {{ sede.capacidad }}</p>
+            <p><strong>Fecha de inauguración:</strong> {{ sede.fecha_inauguracion|date:"d/m/Y" }}</p>
+            <p><strong>Ciudad:</strong> {{ sede.ciudad_id.nombre }}</p>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

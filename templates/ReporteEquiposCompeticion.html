@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+
+{% block head %}
+<style>
+    .equipo-logo {
+        width: 50px; /* Ajusta este tamaño como prefieras */
+        height: 50px; /* Mantiene los logos cuadrados */
+        object-fit: cover; /* Asegura que la imagen cubra todo el espacio sin perder su aspecto */
+    }
+    .tabla-equipos {
+        width: 100%;
+        table-layout: fixed; /* Asegura que todas las celdas tengan el mismo ancho */
+    }
+    .tabla-equipos th.logo-column,
+    .tabla-equipos td.logo-column {
+        width: 25%; /* Ancho de la columna del logo */
+    }
+    .tabla-equipos th,
+    .tabla-equipos td {
+        text-align: center;
+        vertical-align: middle;
+    }
+    .tabla-equipos th {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+    }
+    .tabla-equipos td {
+        padding: 8px; /* Espacio alrededor del contenido de las celdas */
+    }
+</style>
+{% endblock %}
+
+{% block title %} Lista de equipos por competición y fase {% endblock %}
+{% block content %}
+
+<section class="content-info" style="margin-top: 20px; margin-bottom: 20px">
+    <div class="container">
+        <h2>Equipos por Competición y Fase</h2>
+        
+        {% if competicion_seleccionada %}
+            <div class="text-center">
+                <img src="{{ competicion_seleccionada.logo_competicion.url }}" alt="Logo de la Competición" style="max-width: 200px; margin-bottom: 20px;" />
+            </div>
+        {% endif %}
+        
+        <!-- Filtros para seleccionar competición y fase -->
+        <form method="get">
+            <div class="form-group">
+                <label for="competicion">Competición:</label>
+                <select name="competicion" id="competicion" class="form-control" onchange="this.form.submit()">
+                    <option value="">--- Selecciona Competición ---</option>
+                    {% for competicion in competiciones %}
+                        <option value="{{ competicion.min_id }}"
+                            {% if competicion.min_id|stringformat:"s" == request.GET.competicion %}
+                                selected
+                            {% endif %}>
+                            {{ competicion.nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="fase">Fase:</label>
+                <select name="fase" id="fase" class="form-control" onchange="this.form.submit()">
+                    <option value="">--- Selecciona Fase ---</option>
+                    {% for fase in fases %}
+                        <option value="{{ fase.fase_id }}" {% if fase.fase_id|stringformat:"s" == request.GET.fase %}selected{% endif %}>{{ fase.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+        
+        <!-- Tabla de equipos con logos -->
+        <table class="tabla-equipos">
+            <thead>
+                <tr>
+                    <th class="logo-column">Logo</th>
+                    <th>Equipo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for equipo in equipos %}
+                    <tr>
+                        <td class="logo-column"><img class="equipo-logo" src="{{ equipo.logo.url }}" alt="Logo de {{ equipo.nombre }}" /></td>
+                        <td>{{ equipo.nombre }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+{% endblock %}

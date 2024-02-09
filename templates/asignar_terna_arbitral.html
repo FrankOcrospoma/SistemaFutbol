@@ -1,0 +1,88 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Asignar Terna Arbitral</h1>
+
+    <form method="post" action="{% url 'asignar_terna_arbitral' encuentro_id=encuentro.encuentro_id %}">
+
+        {% csrf_token %}
+        <div class="row">
+
+
+            <div class="col-md-3">
+                <div class="row">
+                    <h3>Árbitros</h3>
+                    <select name="arbitro" style="margin-bottom:  20px" id="arbitro" class="form-control">
+                        {% for arbitro in arbitros %}
+                        <option value="{{ arbitro.persona_id }}">{{ arbitro.nombre }} {{ arbitro.apellido }}</option>
+
+                        {% endfor %}
+                    </select>
+
+                </div>
+
+                <div class="row">
+                    <h3>Tipos de Árbitros</h3>
+                    <select name="tipo_arbitro" style="margin-bottom:  20px" id="tipo_arbitro" class="form-control">
+                        {% for tipo_arbitro in tipos_arbitro %}
+                        <option value="{{ tipo_arbitro.tipo_arbitro_id }}">{{ tipo_arbitro.nombre }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <button type="submit" name="añadir_detalle" class="btn btn-success" style="font-size: 14px; padding: 5px 10px;">Añadir</button>
+
+
+                </div>
+            </div>
+
+            <div class="col-md-2">
+            </div>
+
+            <div class="col-md-6">
+                <div class="row">
+
+                    <h3>Detalles Añadidos</h3>
+                    <table class="table table-bordered" id="detalleTable">
+                        <thead>
+                            <tr>
+                                
+
+                                <th>Árbitro</th>
+                                <th>Tipo de Árbitro</th>
+                                <th>Eliminar</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for detalle in detalles_terna %}
+                            <tr>
+                                
+
+                                <td>{{ detalle.persona_id }} </td>
+                                <td>{{ detalle.contrato_id }}</td>
+                                <td>
+                                    <!-- Botón de eliminar con confirmación -->
+                                    <button type="submit" class="btn btn-danger btn-sm" name="eliminar_detalle" value="{{ detalle.detalle_terna_id }}">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="row">
+
+                    </div>
+
+                </div>
+
+                <div class="text-right mt-4">
+                    <a href="{% url 'lista_encuentros' %}?tipo=terna_arbitral" class="btn btn-secondary">Volver</a>
+                </div>
+    </form>
+</div>
+{% endblock %}

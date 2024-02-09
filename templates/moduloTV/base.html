@@ -1,0 +1,58 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Modulo TV</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link href="{% static 'assets/css/baseEvento.css' %}" rel="stylesheet" media="screen">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.2/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous"/>
+    
+
+</head>
+
+<body>
+
+    <nav class="col-md-2 d-none d-md-block bg-light sidebar bg-sidebar">
+        <div class="position-sticky">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% if idEncuentro %}{% url 'mostrar_eventos_generales' idEncuentro=idEncuentro %}{% endif %}?filtro=generales">
+                        Generales
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% if idEncuentro %}{% url 'mostrar_evento' idEncuentro=idEncuentro %}{% endif %}?filtro=en_juego">
+                        En juego
+                    </a>
+                </li>
+                
+                <!-- Puedes agregar más opciones aquí en el futuro -->
+            </ul>
+        </div>
+    </nav>
+    
+    <main class="content">
+        <h1>
+            {% if tipo_filtro == 'generales' %}
+                Eventos Generales
+            {% elif tipo_filtro == 'en_juego' %}
+                Eventos en Juego
+            {% else %}
+                Otros Eventos
+            {% endif %}
+        </h1>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+{% block title %} Lista de jugadores por tarjetas rojas {% endblock %}
+{% block content %}
+<div class="section-title" style="background:url(/static/img/background-fifa.webp)">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <h1>Reporte de Tarjetas Rojas</h1>
+            </div>
+
+            <div class="col-md-4">
+                <div class="breadcrumbs">
+                    <ul>
+                        <li><a href="index.html">Inicio</a></li>
+                        <li>Tarjetas Rojas</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content-info" style="margin-top: 20px; margin-bottom: 20px">
+
+        <div class="container">
+            <div class="row">
+
+                <table class="table-striped table-responsive table-hover result-point">
+                    <thead class="point-table-head">
+                    <tr>
+                        <th class="text-center">Jugador</th>
+                        <th class="text-center">N° Tarjetas Rojas</th>
+                    </tr>
+                    </thead>
+                    <tbody class="text-center">
+                    {% for jr in jugadores_rojas %}
+                    <tr>
+                        <td>{{jr.0}}</td>
+                        <td>{{jr.1}}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+</section>
+
+{% endblock %}

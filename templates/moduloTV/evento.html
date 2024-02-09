@@ -1,0 +1,131 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h1 style="position: relative;">
+        <img class="logo-equipo" src="{% static '/images/' %}{{ equipo_local.equipo.logo }}" alt="{{ equipo_local.equipo }}" style="width: auto; height: 80px;">
+        {{ equipo_local.equipo }}
+        VS
+        {{ equipo_visita.equipo }}
+        <img class="logo-equipo" src="{% static '/images/' %}{{ equipo_visita.equipo.logo }}" alt="{{ equipo_visita.equipo }}" style="width: auto; height: 80px;">
+        <a class="btn btn-secondary" href="{% url 'mostrar_encuentro_evento' %}?competicion=todas&fase=todas" style="position: absolute; right: 10px; top: 0; margin-top: 20px;">Volver</a>
+    </h1>
+</div>
+
+
+<hr>
+
+<body>
+
+    <style>
+        .item {
+            margin-right: 10px;
+        }
+
+        .item.active a {
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .item .link:hover {
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        img.logo-equipo {
+            width: 100px;
+            height: auto;
+        }
+
+        /* Estilo personalizado para los botones */
+        .link.btn {
+            width: 100%;
+            /* Ancho completo */
+            margin-bottom: 10px;
+            /* Espaciado inferior para alineación vertical */
+        }
+
+        .table-responsive {
+            margin-top: 10px;
+            /* Espaciado superior para alineación vertical */
+        }
+    </style>
+
+    <div class="container">
+        <div class="item {% if 'generales' in request.path|urlencode%}active{% endif %}">
+            <a class="link {% if 'generales' in request.path|urlencode%}btn btn-primary {% else %}btn {% endif %} btn-block"
+                href="{% if idEncuentro %}{% url 'mostrar_eventos_generales' idEncuentro=idEncuentro %}{% endif %}?filtro=generales">
+                Generales
+            </a>
+        </div>
+        <div class="item {% if 'EnJuego' in request.path|urlencode%}active{% endif %}">
+            <a class="link {% if 'EnJuego' in request.path|urlencode%}btn btn-primary{% else %}btn {% endif %} btn-block"
+                href="{% if idEncuentro %}{% url 'mostrar_evento' idEncuentro=idEncuentro %}{% endif %}?filtro=en_juego">
+                En juego
+            </a>
+        </div>
+        <!-- Agregar botón de volver -->
+
+        <div class="table-responsive mt-4">
+            <table class="table table-bordered table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th class="text-center">Tipo de Suceso</th>
+                        <th class="text-center">Tiempo</th>
+                        <th class="text-center">Duración</th>
+                        <th class="text-center">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for e in eventos %}
+                    <form
+                        action="{% if e.encuentro_id and e.encuentro_id.id %}{% url 'mostrar_evento' e.encuentro_id.id %}{% endif %}"
+                        method="post" id="eventoForm">
+                        {% csrf_token %}
+                        <tr>
+                            <td class="text-center">{{ e.tipo_evento_id }}</td>
+                            <td class="text-center">{{ e.tiempo }}</td>
+                            <td class="text-center">
+                                <input type="number" class="form-control" value="10" name="tiempo" min="1" max="36000">
+                            </td>
+                            <td class="text-center">
+                                <input type="hidden" name="idEvento" value="{{ e.evento_id }}">
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-eye"></i>
+                                    Mostrar</button>
+                            </td>
+                        </tr>
+                    </form>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+
+    </div>
+
+
+    <!-- Agrega esto al final de tu código HTML, antes de cerrar el cuerpo </body> -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Agregar el estilo btn-primary al hacer hover en nav-link que no está en active
+            $('.item:not(.active) .link').hover(
+                function () {
+                    $(this).addClass('btn btn-primary');
+                },
+                function () {
+                    // Al salir del hover, remover el estilo btn-primary
+                    $(this).removeClass('btn btn-primary');
+                    $(this).addClass('btn');
+                }
+            );
+        });
+    </script>
+
+
+
+</body>
+{% endblock %}

@@ -1,0 +1,674 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h1 style="position: relative;">
+        <img class="logo-equipo" src="{% static '/images/' %}{{ equipo_local.equipo.logo }}" alt="{{ equipo_local.equipo }}" style="width: auto; height: 80px;">
+        {{ equipo_local.equipo }}
+        VS
+        {{ equipo_visita.equipo }}
+        <img class="logo-equipo" src="{% static '/images/' %}{{ equipo_visita.equipo.logo }}" alt="{{ equipo_visita.equipo }}" style="width: auto; height: 80px;">
+        <a class="btn btn-secondary" href="{% url 'mostrar_encuentro_evento' %}?competicion=todas&fase=todas" style="position: absolute; right: 10px; top: 0; margin-top: 20px;">Volver</a>
+    </h1>
+</div>
+
+
+
+<hr>
+<style>
+      img.logo-equipo {
+    width: 100px;
+    height: auto;
+} 
+
+    .banner {
+        display: flex;
+        justify-content: space-between;
+        justify-content: space-around;
+        align-items: center;
+        padding: 10px;
+        flex-direction: row;
+        background-color: #f0f0f0;
+    }
+
+    .equipo-info {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+
+    }
+
+    .nombre-equipo {
+        font-weight: bold;
+
+    }
+
+    .goles-equipo {
+        font-size: 24px;
+        margin-right: 10px;
+    }
+
+    .versus {
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    .equipo-info img {
+        width: 50px;
+        height: auto;
+        margin-right: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .banners-container {
+    position: absolute;
+    top: 50%;
+    right: 3%;
+    color: white;
+    text-align: center;
+    width: 600px;
+    font-size: 20px;
+    border-radius: 5px;
+    z-index: 1;
+  }
+  .banner-marcadores {
+    position: absolute;
+    top: 230px;
+    right: 1050px;
+    background-color: rgb(210, 210, 210);
+    color: black;
+    text-align: center;
+    height: 30px;
+    width: 280px;
+    font-size: 16px;
+    border-radius: 5px;
+    z-index: 1;
+  }
+
+
+  .item {
+        margin-right: 10px;
+    }
+
+    .item.active a {
+        font-weight: bold;
+        color: #ffffff;
+    }
+
+    .item .link:hover {
+        font-weight: bold;
+        color: #ffffff;
+    }
+
+    img.logo-equipo {
+        width: 100px;
+        height: auto;
+    }
+
+    /* Estilo personalizado para los botones */
+    .link.btn {
+        width: 100%; /* Ancho completo */
+        margin-bottom: 10px; /* Espaciado inferior para alineación vertical */
+    }
+
+    .table-responsive {
+        margin-top: 10px; /* Espaciado superior para alineación vertical */
+    }
+
+</style>
+
+<div class="container">
+    <!-- Navigation Bar -->
+    <div class="item {% if 'generales' in request.path|urlencode%}active{% endif %}">
+        <a class="link {% if 'generales' in request.path|urlencode%}btn btn-primary {% else %}btn {% endif %} btn-block" href="{% if idEncuentro %}{% url 'mostrar_eventos_generales' idEncuentro=idEncuentro %}{% endif %}?filtro=generales">
+            Generales
+        </a>
+    </div>
+    <div class="item {% if 'EnJuego' in request.path|urlencode%}active{% endif %}">
+        <a class="link {% if 'EnJuego' in request.path|urlencode%}btn btn-primary{% else %}btn {% endif %} btn-block" href="{% if idEncuentro %}{% url 'mostrar_evento' idEncuentro=idEncuentro %}{% endif %}?filtro=en_juego">
+            En juego
+        </a>
+    </div>
+    <div class="row">
+        
+        <div style="display: none;">
+            {% with equipo_local=equipo_local %}
+            <input type="text" id="logoLocal" name="logoLocal" value="{{ equipo_local.equipo.logo  }}">
+            <input type="text" id="nombreLocal" name="nombreLocal" value="{{ equipo_local.equipo.nombre }}">
+            <input type="text" id="golesLocal" name="golesLocal" value="{{ equipo_local.goles|default:'0' }}">
+
+
+
+            {% endwith %}
+
+            <!-- {% with patro=patrocinador %}
+            <input type="text" id="logoPatrocinador" name="logoPatrocinador" value="{{ patro.logo_1 }}">
+            {% endwith %} -->
+
+            {% with equipo_visita=equipo_visita %}
+
+            <input type="text" id="logoVisita" name="logoVisita" value="{{ equipo_visita.equipo.logo  }}">
+            <input type="text" id="nombreVisita" name="nombreVisita" value="{{ equipo_visita.equipo.nombre }}">
+            <input type="text" id="golesVisita" name="golesVisita" value="{{ equipo_visita.goles|default:'0' }}">
+
+            {% endwith %}
+
+            {% with formacion_local=formacion_local %} 
+            <input type="text" id="formacionLocal" name="formacionLocal" value="{{ formacion_local.formacion }}">
+            {% endwith %}
+
+            {% with formacion_visita=formacion_visita %} 
+            <input type="text" id="formacionVisita" name="formacionVisita" value="{{ formacion_visita.formacion }}">
+            {% endwith %}
+
+        </div>
+        <!-- Datos de Encuentro -->
+        <div class="col-md-3">
+            <form id="enviarDatosEncuentro" method="post" action="{% url 'mostrar_eventos_generales' idEncuentro %}"
+                enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Datos de Encuentro</h3>
+
+                        <div class="input-group  align-items-center ">
+                            <div class="align-items-center">Duración (s): </div>
+                            &nbsp;
+                            <input type="number" class="form-control" id="tiempo" value="10" name="tiempo" min="1"
+                                max="36000">
+                            &nbsp;
+                            <button type="button" class="btn btn-primary" id="generarBannerEncuentro"><i
+                                    class="fas fa-eye"></i> Mostrar</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="form-check" style="display: none;">
+                                <input type="checkbox" class="form-check-input" id="temperaturaCheckbox"
+                                    value="{% with equipo_local=equipo_local %}{{ equipo_local.encuentro.clima }}{% endwith %}">
+                                <label class="form-check-label" for="temperaturaCheckboxx">Temperatura</label>
+                                <!-- <input type="text" class="form-control" id="temperaturaInput"
+                                    placeholder="Ingrese la temperatura"> -->
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="marcadorCheckbox"
+                                    value="{% with equipo_local=equipo_local %}{{ equipo_local.goles }}{% endwith %} - {% with equipo_visita=equipo_visita %}{{ equipo_visita.goles }}{% endwith %}">
+                                <label class="form-check-label" for="marcadorCheckbox">Marcador</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="estadioCheckbox"
+                                    value="{% with equipo_local=equipo_local %}{{ equipo_local.encuentro.sede_id }}{% endwith %}">
+                                <label class="form-check-label" for="estadioCheckbox">Estadio</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="tipoEncuentroCheckbox"
+                                    value="{% with equipo_local=equipo_local %}{{ equipo_local.encuentro.competicion_id }} - {{ equipo_local.encuentro.grupo }} - {{ equipo_local.encuentro.fase }}{% endwith %}">
+                                <label class="form-check-label" for="tipoEncuentroCheckbox">Tipo de Encuentro</label>
+                            </div>
+                            <!-- <div class="form-check" style="display: none;">
+                                <input type="checkbox" class="form-check-input" id="patrocinadorCheckbox">
+                                <label class="form-check-label" for="patrocinadorCheckbox">Patrocinador</label>
+                            </div> -->
+                        </form>
+                    </div>
+                </div>
+                <!-- <textarea id="miTextarea" name="miTextarea"></textarea> -->
+
+            </form>
+        </div>
+
+        <!-- Cronómetro -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Cronómetro</h3>
+                    <div class="input-group">
+                        <form id="cronometroForm">
+                            {% csrf_token %}
+                            <input type="text" class="form-control" id="tiempoCrono" name="tiempoCrono"
+                                pattern="[0-9]{2}:[0-9]{2}" placeholder="MM:SS" title="Formato válido: MM:SS" required>
+                                <button type="button" class="btn btn-success" id="btnlimpiarplay" onclick="togglePlayPause()">
+                                    <i id="playPauseIcon" class="fas fa-play"></i>
+                                </button>                                
+                        
+                            <button type="button" class="btn btn-primary" id="mostrarOcultarBtn" onclick="toggleMostrarOcultar()">
+                                <i id="mostrarOcultarIcon" class="fas fa-eye"></i>
+                            </button>
+                        
+                            <button type="button" class="btn btn-info" onclick="enviarComando('reset')">
+                                <i class="fas fa-undo"></i>
+                            </button>
+                            {% if  equipo_local.encuentro.estado_jugado == "E" %}
+                            <button type="button" class="btn btn-primary" id="iniciarFinalizarBtn">
+                                <i class="fas fa-stop"></i> Finalizar Partido</button>
+                                <script>
+                                    var partidoIniciado = true;
+                                </script>
+                            {%elif  equipo_local.encuentro.estado_jugado == "F" %}
+                            <button type="button" class="btn btn-primary" id="iniciarFinalizarBtn">
+                                <i class="fas fa-play"></i> Iniciar Partido</button>
+                                <script>
+                                    var partidoIniciado = false;
+                                </script>
+                            {%else %}
+                            <button type="button" class="btn btn-primary" id="iniciarFinalizarBtn">
+                                <i class="fas fa-play"></i> Iniciar Partido</button>
+                                <script>
+                                    var partidoIniciado = false;
+                                </script>
+                            {%endif%}
+         
+           
+
+                        </form>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form>
+                        {% csrf_token %}
+
+                        <input type="number" class="form-control" id="tExtra" name="tExtra" placeholder="T.Extra: MM"
+                            title="Formato válido: MM" required>
+
+                        <button type="button" class="btn btn-primary" onclick="enviarComando('tiempoExtra')">
+                            <i class="fas fa-eye">Mostrar</i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Himnos -->
+        <div class="col-md-3">
+            <form id="enviarDatosHimno" method="post" action="{% url 'mostrar_eventos_generales' idEncuentro %}"
+                enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Himnos</h3>
+
+                        <div class="input-group align-items-center  ">
+                            <div class="align-items-center">Duración (s): </div>
+                            &nbsp;
+                            <input type="number" class="form-control" id="tiempo" value="10" name="tiempo" min="1"
+                                max="36000">
+                            &nbsp;
+                            <button type="button" class="btn btn-primary" id="generarBannerHimno"><i
+                                    class="fas fa-eye"></i> Mostrar</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="form-check">
+                                <input type="radio" class="form-check-input" id="localHimno" name="himno" value="local">
+                                &nbsp;
+                                <label class="form-check-label" for="localHimno">Local</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" class="form-check-input" id="visitaHimno" name="himno"
+                                    value="visita">
+                                <label class="form-check-label" for="visitaHimno">Visita</label>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </form>
+        </div>
+      
+            <!--Marcador-->
+            <div class="col-md-3">
+
+                <form id="enviarDatosMarcadorCompleto" method="post"
+                    action="{% url 'mostrar_eventos_generales' idEncuentro %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Marcador completo</h3>
+                            <div class="input-group align-items-center">
+                                <div class="align-items-center">Duración (s):</div>
+                                &nbsp;
+    
+                                <input type="number" class="form-control" id="tiempo" value="10" name="tiempo" min="1"
+                                    max="36000">
+                                &nbsp;
+                                <button type="submit" id="generarBannerMarcador" class="btn btn-primary"><i
+                                        class="fas fa-eye"></i> Mostrar</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col">
+                                    <!-- Primera columna -->
+                                    <div class="form-check">
+                                        <input type="radio" class="form-check-input" id="f1Checkbox" name="finalType"
+                                            value="1er. Tiempo">
+                                        <label class="form-check-label" for="f1Checkbox">Final 1° Tiempo</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="radio" class="form-check-input" id="f2Checkbox" name="finalType"
+                                            value="2do. Tiempo">
+                                        <label class="form-check-label" for="f2Checkbox">Final 2° Tiempo</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="radio" class="form-check-input" id="feCheckbox" name="finalType"
+                                            value="Tiempo extra">
+                                        <label class="form-check-label" for="feCheckbox">Final Tiempo Extra</label>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <!-- Segunda columna -->
+                                    <div class="form-check">
+                                        <input type="radio" class="form-check-input" id="fpCheckbox" name="finalType"
+                                            value="Penales">
+                                        <label class="form-check-label" for="fpCheckbox">Final + Penales</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="estadioMarcadorCompleto"
+                                            name="eCheckbox"
+                                            value="{% with equipo_local=equipo_local %}{{ equipo_local.encuentro.sede_id }}{% endwith %}">
+                                        <label class="form-check-label" for="eCheckbox">Estadio</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="ieCheckbox" name="ieCheckbox">
+                                        <label class="form-check-label" for="ieCheckbox">Insignia de Equipo</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    
+                    </div>
+                </form>
+            </div>
+
+    </div>
+
+    <!-- Alineación -->
+
+
+
+
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <form id="enviarDatosAlineacionLocal" method="post" action="{% url 'mostrar_eventos_generales' idEncuentro %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Alineación Local</h3>
+                            <div class="input-group align-items-center">
+                                <div class="align-items-center">Duración (s): </div>
+                                &nbsp;
+    
+                                <input type="number" class="form-control" id="tiempo" value="10" name="tiempo" min="1" max="36000">
+                                &nbsp;
+                                <button type="submit" id="generarBannerAlineacionLocal" class="btn btn-primary"><i
+                                        class="fas fa-eye"></i> Mostrar</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-check" style="display: block;">
+                                <input type="checkbox" class="form-check-input" id="mostrarAlineacionLocalCheckbox">
+                                <h5 class="form-check-label" for="mostrarAlineacionLocalCheckbox">Mostrar alineacion</h5>
+                            </div>
+                            <div id="contenedorTabla" style="display: flex; justify-content: center;">
+    
+                                <table id="tablaLocal" style="width: 80%;">
+                                    <thead>
+                                        <tr style="text-align: center;">
+                                            <th style="padding: 10px;">Dorsal</th>
+                                            <th style="padding: 10px;">Jugador</th>
+                                            <th style="padding: 10px;">Posicion</th>
+                                            <th style="padding: 10px;">Titular</th>
+                                            <th style="padding: 10px;">Seleccionar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style="border-collapse: collapse; margin-top: 20px; text-align: center;">
+                                        <!-- Aquí se llenarán dinámicamente los datos -->
+                                        {% for a_l in alineacion_local %}
+    
+                                        <tr style="border-bottom: 1px solid #ddd;">
+                                            <td style="padding: 10px;">{{ a_l.dorsal }}</td>
+                                            <td style="padding: 10px;">{{ a_l.contrato_id.persona.alias }}</td>
+                                            <td style="padding: 10px;">{{ a_l.posicion_jugador_id }}</td>
+                                            <td style="padding: 10px; display: none;">{{ a_l.estado }}</td>
+                                            <td style="padding: 10px; display: none;">{{ a_l.contrato_id.contrato_id }}</td>
+                                            <td> {% if a_l.estado %}
+                                                Si
+                                            {% else %}
+                                                No
+                                            {% endif %}
+                                            </td>
+    
+                                            <td style="padding: 10px;">
+                                                <input type="radio" class="form-check-input"
+                                                    id="alineacionLocal{{ forloop.counter }}" name="alineacion"
+                                                    value="local"
+                                                    onclick="capturarDatos('alineacionLocal',{{ forloop.counter }})">
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+    
+                            <!-- Probar -->
+                            &nbsp;
+                            <div>
+                                <div class="form-check">
+                                    <input type="radio" name="finalType" class="form-check-input"
+                                        id="LtarjetasAmarillasCheckbox" value=1>
+                                    <label name="finalType" class="form-check-label"
+                                        for="LtarjetasAmarillasCheckbox">Tarjetas amarillas</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" name="finalType" class="form-check-input"
+                                        id="LtarjetasRojasCheckbox" value=2>
+                                    <label class="form-check-label" for="LtarjetasRojasCheckbox">Tarjetas rojas</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" name="finalType" class="form-check-input" id="LgolesTotalesCheckbox"
+                                        value=3>
+                                    <label class="form-check-label" for="LgolesTotalesCheckbox">Goles totales</label>
+                                </div>
+                                <div class="form-check" style="display: none;">
+                                    <input type="checkbox" class="form-check-input" id="LpatrocinadorCheckbox" value=4>
+                                    <label class="form-check-label" for="LpatrocinadorCheckbox">Patrocinador</label>
+                                </div>
+                            </div>
+                            <!-- Probar fin -->
+    
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-6">
+                <form id="enviarDatosAlineacionVisita" method="post" action="{% url 'mostrar_eventos_generales' idEncuentro %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Alineación Visita</h3>
+                            <div class="input-group align-items-center">
+                                <div class="align-items-center">Duración (s): </div>
+                                &nbsp;
+            
+                                <input type="number" class="form-control" id="tiempo" value="10" name="tiempo" min="1" max="36000">
+                                &nbsp;
+                                <button type="submit" id="generarBannerAlineacionVisita" class="btn btn-primary"><i
+                                        class="fas fa-eye"></i> Mostrar</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-check" style="display: block;">
+                                <input type="checkbox" class="form-check-input" id="mostrarAlineacionVisitaCheckbox">
+                                <h5 class="form-check-label" for="mostrarAlineacionVisitaCheckbox">Mostrar alineacion</h5>
+                            </div>
+                            <div id="contenedorTabla" style="display: flex; justify-content: center;">
+            
+                                <table id="tablaVisita" style="width: 80%;">
+                                    <thead>
+                                        <tr style="text-align: center;">
+                                            <th style="padding: 10px;">Dorsal</th>
+                                            <th style="padding: 10px;">Jugador</th>
+                                            <th style="padding: 10px;">Posicion</th>
+                                            <th style="padding: 10px;">Titular</th>
+                                            <th style="padding: 10px;">Seleccionar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style="border-collapse: collapse; margin-top: 20px; text-align: center;">
+                                        <!-- Aquí se llenarán dinámicamente los datos -->
+                                        {% for a_l in alineacion_visita %}
+                                        <tr style="border-bottom: 1px solid #ddd;">
+                                            <td style="padding: 10px;">{{ a_l.dorsal }}</td>
+                                            <td style="padding: 10px;">{{ a_l.contrato_id.persona.alias }}</td>
+                                            <td style="padding: 10px;">{{ a_l.posicion_jugador_id }}</td>
+                                            <td style="padding: 10px; display: none;">{{ a_l.estado }}</td>
+                                            <td style="padding: 10px; display: none;">{{ a_l.contrato_id.contrato_id }}</td>
+                                            <td> {% if a_l.estado %}
+                                                Si
+                                                {% else %}
+                                                No
+                                                {% endif %}
+                                            </td>
+                                            <td style="padding: 10px;">
+                                                <input type="radio" class="form-check-input"
+                                                    id="alineacionVisita{{ forloop.counter }}" name="alineacion" value="visita"
+                                                    onclick="capturarDatos('alineacionVisita',{{ forloop.counter }})">
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- Probar -->
+                            &nbsp;
+                            <div>
+                                <div class="form-check">
+                                    <input type="radio" name="finalType" class="form-check-input" id="VtarjetasAmarillasCheckbox"
+                                        value=1>
+                                    <label name="finalType" class="form-check-label" for="VtarjetasAmarillasCheckbox">Tarjetas
+                                        amarillas</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" name="finalType" class="form-check-input" id="VtarjetasRojasCheckbox"
+                                        value=2>
+                                    <label class="form-check-label" for="VtarjetasRojasCheckbox">Tarjetas rojas</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" name="finalType" class="form-check-input" id="VgolesTotalesCheckbox"
+                                        value=3>
+                                    <label class="form-check-label" for="VgolesTotalesCheckbox">Goles totales</label>
+                                </div>
+                                <div class="form-check" style="display: none;">
+                                    <input type="checkbox" class="form-check-input" id="VpatrocinadorCheckbox" value=4>
+                                    <label class="form-check-label" for="VpatrocinadorCheckbox">Patrocinador</label>
+                                </div>
+                            </div>
+                            <!-- Probar fin -->
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+
+        </div>
+    <!--  -->
+
+</div>
+
+
+
+<!-- Contenedor donde se mostrará el banner generado -->
+<div id="bannerContainer" style="display: none;">
+    <div class="banner">
+        <!-- Equipo Local -->
+        <div class="equipo-info">
+            <p class="goles-equipo">2</p>
+            <div class="row" style="display: flex;
+            flex-direction: column;
+            align-items: center;">
+                <p class="nombre-equipo">Equipo Local</p>
+
+                <img src="/static/images/equipo/logo/7.png" alt="Equipo Local">
+                <p>Competicion</p>
+            </div>
+
+
+        </div>
+
+        <!-- Versus -->
+        <div class="versus">VS</div>
+
+        <!-- Equipo Visitante -->
+        <div class="equipo-info">
+            <div class="row" style="display: flex;
+            flex-direction: column;
+            align-items: center;">
+                <p class="nombre-equipo">Equipo Visitante</p>
+                <img src="/static/images/equipo/logo/7.png" alt="Equipo Visitante">
+                <p>Sede</p>
+
+            </div>
+            <p class="goles-equipo">1</p>
+        </div>
+    </div>
+</div>
+
+<div class="form-inline" style="display: none;">
+    <!-- Team 1 banner -->
+    <div class="team-banner team1-banner"
+        style="display: flex; align-items: center; padding: 10px; background-color: #fff; border: 1px solid #ddd; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+        <div class="score" style="font-size: 24px; font-weight: bold;">2</div>
+        <img src="/static/images/equipo/logo/7.png" alt="Team 1 Logo"
+            style="width: 50px; height: 50px;object-fit: cover; border-radius: 50%; margin-right: 10px;">
+        <div class="col-md-6">
+            <div class="team-name" style="font-size: 16px; font-weight: bold;">Equipo local</div>
+            <div class="team-name" style="font-size: 16px; font-weight: bold;">Estadio</div>
+        </div>
+
+    </div>
+
+    <!-- Team 2 banner -->
+    <div class="team-banner team2-banner"
+        style=" display: flex; align-items: center; padding: 10px; background-color: #fff; border: 1px solid #ddd; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+
+        <div class="col-md-6">
+            <div class="team-name" style="font-size: 16px; font-weight: bold;">Equipo visita</div>
+            <div class="team-name" style="font-size: 16px; font-weight: bold;">Tiempo</div>
+        </div>
+
+        <img src="/static/images/equipo/logo/7.png" alt="Team 2 Logo"
+            style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%; margin-right: 10px;">
+        <div class="score" style="font-size: 24px; font-weight: bold;">1</div>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- Área del banner -->
+<div class="banner-container form-inline"
+    style="position: absolute;top: -450px; left: 20%; background-color: rgba(0, 0, 0, 0.7); color: white; text-align: center; width: 70%; max-width: 500px; font-size: 30px; border-radius: 5px; z-index: 1;">
+    <img src="/static/images/equipo/logo/7.png" alt="Equipo Visitante"
+        style="width: 30px; height: auto; margin-right: 10px;">
+    <div class="banner-content" style="flex-grow: 1;">
+        Himno nacional de Perú
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script type="text/javascript" src="{% static 'assets/js/generales.js' %}"></script>
+
+
+
+<textarea id="miTextarea" name="miTextarea" style="display: none;"></textarea>
+
+{% endblock %}

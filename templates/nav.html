@@ -1,0 +1,115 @@
+<!-- mainmenu-->
+<style>
+  .scrollable-list {
+    max-height: 150px; 
+    overflow-y: auto; 
+  }
+</style>
+
+</style>
+<nav class="mainmenu" style="position: revert !important;">
+  <div class="container">
+    <!-- Menu-->
+    <ul class="sf-menu" id="menu">
+
+      <li class="current">
+        <a href="/">Inicio</a>
+   
+      </li>
+
+
+
+      <li class="current">
+        <a href="/competencias/">Competencias</a>
+      </li>
+
+      <li class="current">
+        <a href="/">Fixtures</a>
+        <ul class="sub-current">
+          {% for c_n in competencias_nav %}
+          <li>
+            <a href="/competencias/{{c_n.nombre.lower}}/fixture">{{ c_n.nombre | title}}</a>
+          </li>
+          {% endfor %}
+        </ul>
+      </li>
+      <li class="current">
+        <a href="/">Encuentros</a>
+        <ul class="sub-current">
+          {% for c_n in competencias_nav %}
+          <li>
+            <a href="/competencias/{{c_n.nombre.lower}}/encuentros">{{ c_n.nombre | title}}</a>
+          </li>
+          {% endfor %}
+        </ul>
+      </li>
+      <li class="current">
+        <a href="#">Reportes</a>
+        <ul class="sub-current">
+            <li class="current">
+                <a href="#">Reporte de Jugadores</a>
+                <ul class="sub-current">
+                    <li>
+                      <a href="{% url 'reporte_jugadores' %}">Reporte de jugadores por competición</a>
+                    </li>
+                    <li><a href="{% url 'lista_personas' %}">Personas por Tipo y Pais</a></li>
+                </ul>
+            </li>
+            <!-- Nueva categoría Reporte Sedes aquí -->
+            <li class="current">
+                <a href="">Reporte Sedes</a>
+                <ul class="sub-current">
+                    <!-- Las opciones para Reporte Sedes irían aquí -->
+                    <li><a href="/reporte/sedes">Sedes por competición</a></li>
+                </ul>
+            </li>
+            <li class="current">
+              <a href="#">Reporte Equipo</a>
+              <ul class="sub-current">
+                  <li><a href="{% url 'lista_equipos' %}">Equipos por competición y fase</a></li>
+              </ul>
+          </li>
+          <li class="current">
+            <a href="#">Reporte Organizaciones</a>
+            <ul class="sub-current">
+                <li><a href="/reporte/organizaciones">Tipo Organizaciones</a></li>
+                <li><a href="/reporte/organizacion"> Organización</a></li>
+            </ul>
+        </li>
+        <li class="current">
+          <a href="#">Tabla De Posiciones</a>
+          <ul class="sub-current scrollable-list">
+            {% for c_n in competencias_nav %}
+              <li><a href="/reporte_tabla_posiciones/{{c_n.nombre.lower}}" value="Copa Mundial Qatar 2022">{{c_n.nombre.lower}}</a></li>
+              {% endfor %}
+          </ul>
+      </li>
+        </ul>
+    </li>
+    
+      <li class="current">
+        <a href="/contacto">Contacto</a>
+      </li>
+     <li class="current"> 
+        <a href="/competenciasVivo">Tv en vivo</a>
+      </li>
+
+      {% comment %} <li class="current">
+        <a href="players.html">Equipos</a>
+        <ul class="sub-current">
+          <li>
+            <a href="players.html">Lista de Equipos</a>
+          </li>
+        </ul>
+      </li> {% endcomment %}
+
+          
+    </ul>
+    <!-- End Menu-->
+  </div>
+</nav>
+<!-- End mainmenu-->
+
+<!-- Mobile Nav-->
+
+<!-- End Mobile Nav-->

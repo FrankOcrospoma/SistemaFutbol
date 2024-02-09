@@ -1,0 +1,68 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+  <div class="container mt-4">
+
+    <h1 class="mb-4">Asignar Estadísticas</h1>
+
+    <form method="post" action="{% url 'asignarEstadisticas' encuentro_id=encuentro.encuentro_id %}">
+      {% csrf_token %}
+
+      <div class="row">
+        <!-- Columna de estadísticas -->
+        <div class="col-md-4">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Estadísticas</th>
+                <th>{{ equipoLocal.nombre }}</th>
+                <th>{{ equipoVisita.nombre }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Posesión balón %:</td>
+                <td><input type="number" class="form-control" name="posesion_balon_equipo1" value="{{ estadistica_local.posesion_balon|default:'0' }}"></td>
+                <td><input type="number" class="form-control" name="posesion_balon_equipo2" value="{{ estadistica_visitante.posesion_balon|default:'0' }}"></td>
+            </tr>
+            <tr>
+                <td>Pases acertados:</td>
+                <td><input type="number" class="form-control" name="pases_acertados_equipo1" value="{{ estadistica_local.pases_acertados|default:'0' }}"></td>
+                <td><input type="number" class="form-control" name="pases_acertados_equipo2" value="{{ estadistica_visitante.pases_acertados|default:'0' }}"></td>
+            </tr>
+            <tr>
+                <td>Tiros desviados:</td>
+                <td><input type="number" class="form-control" name="tiros_desviados_equipo1" value="{{ estadistica_local.tiros_desviados|default:'0' }}"></td>
+                <td><input type="number" class="form-control" name="tiros_desviados_equipo2" value="{{ estadistica_visitante.tiros_desviados|default:'0' }}"></td>
+            </tr>
+            <tr>
+                <td>Efectividad pases %:</td>
+                <td><input type="number" class="form-control" name="efectividad_pases_equipo1" value="{{ estadistica_local.efectividad_pases|default:'0' }}"></td>
+                <td><input type="number" class="form-control" name="efectividad_pases_equipo2" value="{{ estadistica_visitante.efectividad_pases|default:'0' }}"></td>
+            </tr>
+            <tr>
+                <td>Tiros indirectos al arco:</td>
+                <td><input type="number" class="form-control" name="tiros_indirectos_arco_equipo1" value="{{ estadistica_local.tiros_indirectos_arco|default:'0' }}"></td>
+                <td><input type="number" class="form-control" name="tiros_indirectos_arco_equipo2" value="{{ estadistica_visitante.tiros_indirectos_arco|default:'0' }}"></td>
+            </tr>
+            <tr>
+                <td>Tiros directos al arco:</td>
+                <td><input type="number" class="form-control" name="tiros_directos_arco_equipo1" value="{{ estadistica_local.tiros_directos_arco|default:'0' }}"></td>
+                <td><input type="number" class="form-control" name="tiros_directos_arco_equipo2" value="{{ estadistica_visitante.tiros_directos_arco|default:'0' }}"></td>
+            </tr>
+        </tbody>
+          </table>
+        </div>
+      </div>
+    
+      <div class="text-right mt-4">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a href="{% url 'lista_encuentros' %}?tipo=estadisticas" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+    
+  </div>
+{% endblock %}

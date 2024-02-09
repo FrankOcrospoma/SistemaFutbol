@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+
+{% block title %} Competencias en Vivo {% endblock %}
+            
+{% block content %}     
+<style>
+    
+    .competencia-card {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 20px;
+        transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
+        width: 80vw;
+        margin-left: -18vw;
+    }
+
+    .competencia-card:hover {
+        box-shadow: 0 0 20px #09ff00;
+        /* transform: scale(1.05); */
+    }
+
+    .competencia-card img {
+        width: 150px;
+        height: auto;
+        margin: 10px 10px 10px; /* Agrega un margen derecho al logo */
+    }
+
+    .competencia-details {
+        flex-grow: 1;
+        padding: 20px;
+    }
+    .competencia-details h5 {
+        margin-bottom: 10px;
+        font-size: 1.5rem;
+    }
+
+    .competencia-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.5s ease-in-out;
+    }
+
+
+    .competencia-card.open .competencia-content {
+        max-height: 1000px; /* Un valor suficientemente grande para manejar el contenido */
+        transition: max-height 0.5s ease-in-out;
+    }
+</style>
+
+<div class="section-title" style="background:url(/static/img/background-competencias.webp)">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12"> <!-- Use the full width of the container -->
+                <h1>Competencias en vivo</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Section Title -->
+
+<!-- Section Area - Content Central -->
+<section class="content-info">
+    <div class="container padding-top">
+        <div class="groups-list page-group">
+            <div class="row justify-content-center align-items-center" style="margin: 0 auto;">
+                <!-- Alinea y centra el contenido -->
+            
+                {% for cs in competencia_seleccion %}
+                    <div class="col-lg-8 mb-4">
+
+                        <div class="competencia-card" data-id="{{ cs.competicion_id }}">
+                            <img src="{{ cs.logo_competicion.url }}" class="card-img-top img-fluid" alt="{{ cs.nombre }}">
+                            <div class="competencia-details">
+                                <h5>{{ cs.nombre }}</h5>
+                                <div class="competencia-content">
+                                    <!-- Contenido específico de la competencia -->
+                                    <div class="info-results" id="competencia-info-{{ cs.competicion_id }}"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                {% endfor %}
+            
+            </div>
+            
+        </div>
+    </div>
+</section>
+<!-- End Section Area - Content Central -->
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var competenciaCards = document.querySelectorAll(".competencia-card");
+
+        competenciaCards.forEach(function(card) {
+            card.addEventListener("click", function(event) {
+                // Verifica si el clic proviene del botón "Ver"
+                if (!event.target.classList.contains('ver-button')) {
+                    var content = card.querySelector(".competencia-content");
+                    var isOpen = card.classList.contains('open');
+
+                    // Si estaba abierto, oculta el contenido
+                    if (isOpen) {
+                        content.style.maxHeight = 0;
+                    } else {
+                        // Si estaba cerrado, espera a que termine la transición y luego muestra el contenido
+                        content.style.maxHeight = "1000px"; // Establece un valor suficientemente grande para manejar el contenido
+                        content.addEventListener('transitionend', function() {
+                            content.style.maxHeight = content.scrollHeight + "px";
+                        }, { once: true });
+                    }
+
+                    // Toggle de la clase 'open' para activar/desactivar la animación CSS
+                    card.classList.toggle('open', !isOpen);
+
+                    // Obtener el ID de la competencia desde el atributo data-id
+                    var idCompeticion = card.getAttribute("data-id");
+
+                    // Log para verificar el valor de idCompeticion
+                    console.log("ID de la competencia:", idCompeticion);
+
+                    // Realizar la petición AJAX solo al endpoint que devuelve los datos
+                    $.ajax({
+                        type: "GET",
+                        url: "/tvHome/encuentrosVivo/" + idCompeticion + "/",
+                        success: function(data) {
+                            // Actualizar el contenido de la competencia con los datos obtenidos
+                            var infoContainer = document.getElementById("competencia-info-" + idCompeticion);
+                            infoContainer.innerHTML = data;
+                        },
+                        error: function(error) {
+                            console.error("Error al obtener datos:", error);
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>
+
+
+
+{% endblock %}

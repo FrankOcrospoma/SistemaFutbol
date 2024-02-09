@@ -1,0 +1,271 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+<style>
+  /* Estilos para centrar los elementos de las tablas */
+  table {
+    width: 100%;
+    margin-bottom: 1rem;
+    color: #212529;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    padding: 0.75rem;
+    text-align: center;
+    border-bottom: 1px solid #dee2e6;
+  }
+
+  th {
+    background-color: #f8f9fa;
+    vertical-align: middle;
+  }
+  img.logo-equipo {
+    width: 100px;
+    height: auto;
+} 
+
+</style>
+
+  <div class="container mt-4">
+    
+    <h1 class="mb-4">Asignar Alineaciones</h1>
+
+    <form method="post" action="{% url 'asignarAlineaciones' encuentro_id=encuentro.encuentro_id %}">
+      {% csrf_token %}
+
+      <div class="row">
+        <div class="col-md-6">
+          <h2>{{ equipoLocal.0.nuevo_club.nombre }} <img class="logo-equipo" src="{% static '/images/' %}{{ equipoLocal.0.nuevo_club.logo }}" style="width: auto; height: 80px;" ></h2>
+
+          <!-- Agrega el campo de selección para la formación -->
+          <label for="formacion_local">Formación:</label>
+          <select name="formacion_local" id="formacion_local" class="form-control">
+            <option value="4-3-3" {% if formacion_local_actual == '4-3-3' %}selected{% endif %}>4-3-3</option>
+            <option value="4-4-2" {% if formacion_local_actual == '4-4-2' %}selected{% endif %}>4-4-2</option>
+            <option value="4-2-3-1" {% if formacion_local_actual == '4-2-3-1' %}selected{% endif %}>4-2-3-1</option>
+            <option value="3-5-2" {% if formacion_local_actual == '3-5-2' %}selected{% endif %}>3-5-2</option>
+            <option value="4-1-4-1" {% if formacion_local_actual == '4-1-4-1' %}selected{% endif %}>4-1-4-1</option>
+            <option value="4-3-2-1" {% if formacion_local_actual == '4-3-2-1' %}selected{% endif %}>4-3-2-1</option>
+            <option value="3-4-3" {% if formacion_local_actual == '3-4-3' %}selected{% endif %}>3-4-3</option>
+            <option value="4-4-1-1" {% if formacion_local_actual == '4-4-1-1' %}selected{% endif %}>4-4-1-1</option>
+          </select>
+<br>
+
+    <!-- Contador de selecciones para el equipo local -->
+    <p>Seleccionados: <span id="contador_local">0</span>/11</p>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Jugador</th>
+          <th>Posición</th>
+          <th>Dorsal</th>
+          <th><input type="checkbox" id="seleccionar_todos_local"> Sel</th>
+          <th>Cap</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for jugador in equipoLocal %}
+          <tr>
+            <td>
+              <input type="hidden" name="jugadoresLocales[]" value="{{ jugador.persona.persona_id }}">
+              {{ jugador.persona.alias }}
+            </td>
+            
+            <td>{{ jugador.posicion_jugador }}</td>
+            <td>{{ jugador.dorsal }}</td>
+            <td>
+              <input type="checkbox" name="jugadores_local[]" value="{{ jugador.persona.persona_id }}"
+              {% if jugador.persona.persona_id in jugadores_en_alineacion_local %} checked {% endif %}
+              class="jugador-checkbox-local">
+            </td>
+            <td>
+              <input type="checkbox" name="capitan_local" value="{{ jugador.persona.persona_id }}"
+              class="capitan-checkbox-local" {% if capitan_actual_local == jugador.persona.persona_id %}checked{% endif %}>
+                  </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+        <div class="col-md-6">
+          <h2>{{ equipoVisita.0.nuevo_club.nombre }} <img class="logo-equipo" src="{% static '/images/' %}{{ equipoVisita.0.nuevo_club.logo }}"  style="width: auto; height: 80px;"></h2>
+ 
+        <label for="formacion_visita">Formación:</label>
+        <select name="formacion_visita" id="formacion_visita" class="form-control">
+          <option value="4-3-3" {% if formacion_visita_actual == '4-3-3' %}selected{% endif %}>4-3-3</option>
+          <option value="4-4-2" {% if formacion_visita_actual == '4-4-2' %}selected{% endif %}>4-4-2</option>
+          <option value="4-2-3-1" {% if formacion_visita_actual == '4-2-3-1' %}selected{% endif %}>4-2-3-1</option>
+          <option value="3-5-2" {% if formacion_visita_actual == '3-5-2' %}selected{% endif %}>3-5-2</option>
+          <option value="4-1-4-1" {% if formacion_visita_actual == '4-1-4-1' %}selected{% endif %}>4-1-4-1</option>
+          <option value="4-3-2-1" {% if formacion_visita_actual == '4-3-2-1' %}selected{% endif %}>4-3-2-1</option>
+          <option value="3-4-3" {% if formacion_visita_actual == '3-4-3' %}selected{% endif %}>3-4-3</option>
+          <option value="4-4-1-1" {% if formacion_visita_actual == '4-4-1-1' %}selected{% endif %}>4-4-1-1</option>
+        </select>
+        <br>
+        <p>Seleccionados: <span id="contador_visita">0</span>/11</p>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Jugador</th>
+                <th>Posición</th>
+                <th>Dorsal</th>
+                <th><input type="checkbox" id="seleccionar_todos_visita"> Sel</th>
+                <th>Cap</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for jugador in equipoVisita %}
+                <tr>
+                  <td> <input type="hidden" name="jugadoresVisitas[]" value="{{ jugador.persona.persona_id }}">{{ jugador.persona.alias }}</td>
+                  <td>{{ jugador.posicion_jugador }}</td>
+                  <td>{{ jugador.dorsal }}</td>
+                  <td>
+                    <input type="checkbox" name="jugadores_visita[]" value="{{ jugador.persona.persona_id }}"
+                           {% if jugador.persona.persona_id in jugadores_en_alineacion_visita %} checked {% endif %}
+                           class="jugador-checkbox-visita">
+                          </td>
+                          <td>
+                            <input type="checkbox" name="capitan_visita" value="{{ jugador.persona.persona_id }}"
+                            class="capitan-checkbox-visita" {% if capitan_actual_visita == jugador.persona.persona_id %}checked{% endif %}>                         </td>
+                        
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <div class="text-right mt-4">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a class="btn btn-secondary" href="javascript:history.back()">Cancelar</a>
+      </div>
+    </form>
+  </div>
+  <script>
+    // Función para manejar la funcionalidad de seleccionar todos y contar selecciones
+    function manejarContadores() {
+      // Contador local
+      var checkboxesJugadorLocal = document.getElementsByClassName('jugador-checkbox-local');
+      var contadorLocal = 0;
+      
+      for (var checkbox of checkboxesJugadorLocal) {
+        if (checkbox.checked) {
+          contadorLocal++;
+        }
+      }
+      
+      document.getElementById('contador_local').innerText = contadorLocal;
+      
+      // Contador visita
+      var checkboxesJugadorVisita = document.getElementsByClassName('jugador-checkbox-visita');
+      var contadorVisita = 0;
+      
+      for (var checkbox of checkboxesJugadorVisita) {
+        if (checkbox.checked) {
+          contadorVisita++;
+        }
+      }
+      
+      document.getElementById('contador_visita').innerText = contadorVisita;
+    }
+  // Función para seleccionar/deseleccionar los primeros N checkboxes
+function seleccionarPrimeros(checkboxes, isChecked, limite) {
+  for (var i = 0; i < limite && i < checkboxes.length; i++) {
+    checkboxes[i].checked = isChecked;
+  }
+  manejarContadores();
+}
+  // Función para inhabilitar otros checkboxes de capitán cuando se selecciona un capitán
+  function inhabilitarOtrosCapitanes(checkbox, checkboxes) {
+    if (checkbox.checked) {
+      for (var otherCheckbox of checkboxes) {
+        if (otherCheckbox !== checkbox) {
+          otherCheckbox.disabled = true;
+        }
+      }
+    } else {
+      for (var otherCheckbox of checkboxes) {
+        otherCheckbox.disabled = false;
+      }
+    }
+  }
+
+  // Función para seleccionar/deseleccionar todos los checkboxes
+  function seleccionarTodos(checkboxes, isChecked) {
+    for (var checkbox of checkboxes) {
+      checkbox.checked = isChecked;
+    }
+    manejarContadores();
+  }
+
+  // Agregar evento de carga del documento para ejecutar la función
+  document.addEventListener('DOMContentLoaded', function () {
+    manejarContadores();
+
+    // Agregar evento de cambio a cada checkbox de jugador para contar selecciones individualmente
+    var checkboxesJugadorLocal = document.getElementsByClassName('jugador-checkbox-local');
+    for (var checkbox of checkboxesJugadorLocal) {
+      checkbox.addEventListener('change', function () {
+        manejarContadores();
+      });
+    }
+
+    var checkboxesJugadorVisita = document.getElementsByClassName('jugador-checkbox-visita');
+    for (var checkbox of checkboxesJugadorVisita) {
+      checkbox.addEventListener('change', function () {
+        manejarContadores();
+      });
+    }
+
+    // Agregar evento de cambio al checkbox "seleccionar todos" para seleccionar/deseleccionar los primeros 11 checkboxes
+    var seleccionarTodosLocal = document.getElementById('seleccionar_todos_local');
+    seleccionarTodosLocal.addEventListener('change', function () {
+      var checkboxesJugadorLocal = document.getElementsByClassName('jugador-checkbox-local');
+      seleccionarPrimeros(checkboxesJugadorLocal, this.checked, 11);
+    });
+
+    var seleccionarTodosVisita = document.getElementById('seleccionar_todos_visita');
+    seleccionarTodosVisita.addEventListener('change', function () {
+      var checkboxesJugadorVisita = document.getElementsByClassName('jugador-checkbox-visita');
+      seleccionarPrimeros(checkboxesJugadorVisita, this.checked, 11);
+    });
+
+    // Agregar evento de cambio a cada checkbox de capitán para contar selecciones individualmente
+    var capitanCheckboxesLocal = document.getElementsByClassName('capitan-checkbox-local');
+    for (var capitanCheckbox of capitanCheckboxesLocal) {
+      capitanCheckbox.addEventListener('change', function () {
+        var checkboxesJugadorLocal = document.getElementsByClassName('capitan-checkbox-local');
+        inhabilitarOtrosCapitanes(this, checkboxesJugadorLocal);
+      });
+    }
+
+    var capitanCheckboxesVisita = document.getElementsByClassName('capitan-checkbox-visita');
+    for (var capitanCheckbox of capitanCheckboxesVisita) {
+      capitanCheckbox.addEventListener('change', function () {
+        var checkboxesJugadorVisita = document.getElementsByClassName('capitan-checkbox-visita');
+        inhabilitarOtrosCapitanes(this, checkboxesJugadorVisita);
+      });
+    }
+
+    // Verificar si hay un capitán seleccionado al cargar la página y deshabilitar los demás
+    var capitanActualLocal = document.querySelector('.capitan-checkbox-local:checked');
+    if (capitanActualLocal) {
+      inhabilitarOtrosCapitanes(capitanActualLocal, capitanCheckboxesLocal);
+    }
+
+    var capitanActualVisita = document.querySelector('.capitan-checkbox-visita:checked');
+    if (capitanActualVisita) {
+      inhabilitarOtrosCapitanes(capitanActualVisita, capitanCheckboxesVisita);
+    }
+  });
+</script>
+  
+
+  
+{% endblock %}

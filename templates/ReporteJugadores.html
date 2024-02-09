@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Reporte de Jugadores{% endblock %}
+
+{% block content %}
+<section class="content-info" style="margin-top: 20px; margin-bottom: 20px">
+    <div class="container">
+        
+        <h2>
+            {% if estadistica_tipo == 'goleadores' %}
+                Estadística jugadores con más Goles
+            {% elif estadistica_tipo == 'asistidores' %}
+                Estadística jugadores con más Asistencias
+            {% elif estadistica_tipo == 'amarillas' %}
+                Estadística jugadores con más Tarjetas Amarillas
+            {% elif estadistica_tipo == 'rojas' %}
+                Estadística jugadores con más Tarjetas Rojas
+            {% else %}
+                Estadística de Jugadores
+            {% endif %}
+        </h2>
+        <!-- Formulario para seleccionar competición y tipo de estadística -->
+        <form method="get">
+            <div class="form-group">
+                <label for="competicion">Competición:</label>
+                <select name="competicion" id="competicion" class="form-control" onchange="this.form.submit()">
+                    <option value="">--- Selecciona Competición ---</option>
+                    {% for comp in competiciones %}
+                        <option value="{{ comp.competicion_id }}" {% if comp.competicion_id|stringformat:"s" == request.GET.competicion %}selected{% endif %}>{{ comp.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="estadistica">Estadística:</label>
+                <select name="estadistica" id="estadistica" class="form-control" onchange="this.form.submit()">
+                    <option value="goleadores" {% if 'goleadores' == estadistica_tipo %}selected{% endif %}>Goleadores</option>
+                    <option value="asistidores" {% if 'asistidores' == estadistica_tipo %}selected{% endif %}>Asistidores</option>
+                    <option value="amarillas" {% if 'amarillas' == estadistica_tipo %}selected{% endif %}>Tarjetas Amarillas</option>
+                    <option value="rojas" {% if 'rojas' == estadistica_tipo %}selected{% endif %}>Tarjetas Rojas</option>
+                </select>
+            </div>
+        </form>
+        {% if competicion_seleccionada %}
+            <div class="text-center">
+                <img src="{{ competicion_seleccionada.logo_competicion.url }}" alt="Logo de la Competición" style="max-width: 200px; margin-bottom: 20px;" />
+            </div>
+        {% endif %}
+        <!-- ... -->
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Posición</th>
+                    <th>Nombre</th>
+                    <th>
+                        {% if estadistica_tipo == 'goleadores' %}
+                            Número de Goles
+                        {% elif estadistica_tipo == 'asistidores' %}
+                            Número de Asistencias
+                        {% elif estadistica_tipo == 'amarillas' %}
+                            Número de Tarjetas Amarillas
+                        {% elif estadistica_tipo == 'rojas' %}
+                            Número de Tarjetas Rojas
+                        {% endif %}
+                    </th>
+                    <th>Equipo</th>
+                    <!-- Eliminar la columna País -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for jugador in jugadores %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ jugador.alias }}</td>
+                        <td>
+                            {% if jugador.estadistica_valor is not None and jugador.estadistica_valor != 0 %}
+                                {{ jugador.estadistica_valor }}
+                            {% else %}
+                                <span>No disponible</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if jugador.equipo_logo %}
+                                <img src="{% static jugador.equipo_logo %}" alt="Logo del Equipo" style="height:50px;">
+                            {% else %}
+                                <span>No disponible</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4">No hay datos disponibles.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>     
+        
+    </div>
+</section>
+{% endblock %}

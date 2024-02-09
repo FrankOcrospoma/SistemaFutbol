@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+{% block title %} TV en Vivo - Partido de Fútbol {% endblock %}
+{% block content %}
+<style>
+  body {
+      overflow: hidden;
+  }
+
+  nav.mainmenu {
+      display: none;
+  }
+
+  .fondo {
+      width: 100vw;
+      height: 100vh;
+      background-size: cover;
+      background-position: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1;
+  }
+
+  .banners-container {
+      position: absolute;
+      top: 35%;
+      right: 30%;
+      color: white;
+      text-align: center;
+      width: 600px;
+      font-size: 20px;
+      z-index: 1;
+  }
+
+  .banner-marcadores {
+      position: absolute;
+      top: 2vh;
+      left: 1vw;;
+      background-color: rgb(210, 210, 210);
+      color: black;
+      text-align: center;
+      height: 3.5%;
+      width: 30vh;
+      font-size: 16px;
+      border-radius: 5px;
+      z-index: 1;
+  }
+</style>
+
+
+<div class="container">
+  <div class="video-container">
+
+    <img class="fondo" src="/static/images/fondoFut.jpg" alt="">
+    <div class="banner-marcadores" id="general" style="display:none">
+      <span id="cronometro">00:00</span>&nbsp;
+      {%if equipo_a.tipo_equipo_id.descripcion == "CLUB"%}
+      <img
+        src="{{jugar_encuentro.equipo_local.logo.url}}" alt=""
+        style="margin-top:0px; width: 10%">
+        {% else %}
+        <img
+        src="{{jugar_encuentro.equipo_local.sede_id.ciudad_id.pais_id.logo_bandera.url}}" alt=""
+        style="margin-top:0px; width: 10%">
+        {% endif %}
+        <span> {{equipo_a.siglas}} </span><span
+        id="marcador-local">{{goles_equipo_a}}</span> - <span
+        id="marcador-visitante">{{goles_equipo_b}}</span><span> {{equipo_b.siglas}} </span>     
+         {%if equipo_b.tipo_equipo_id.descripcion == "CLUB"%}
+        <img
+          src="{{jugar_encuentro.equipo_visita.logo.url}}" alt=""
+          style="margin-top:0px; width: 10%">
+          {% else %}
+          <img
+          src="{{jugar_encuentro.equipo_visita.sede_id.ciudad_id.pais_id.logo_bandera.url}}" alt=""
+          style="margin-top:0px; width: 10%">
+          {% endif %}
+        <span id="banner-tExtra" style="display: none;"><span id="tiempoExtra">+0</span></span>
+    </div>
+
+    <div id="banners-container" class="banners-container" style="display: none;">
+      
+    </div>
+
+  </div>
+</div>
+
+<script type="text/javascript" src="{% static 'assets/js/TVvivo.js' %}"></script>
+
+{% endblock %}

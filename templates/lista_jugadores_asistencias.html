@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+{% block title %} Lista de jugadores por asistencias {% endblock %}
+{% block content %}
+
+<section class="content-info" style="margin-top: 20px; margin-bottom: 20px">
+    <div class="container">
+        <h2>Reporte de Asistidores</h2>
+        <form method="get">
+            <div class="form-group">
+                <label for="competicion">Competición:</label>
+                <select name="competicion" id="competicion" class="form-control" onchange="this.form.submit()">
+                    <option value="">--- Selecciona Competición ---</option>
+                    {% for competicion in competiciones %}
+                    <option value="{{ competicion.competicion_id }}" {% if competicion.competicion_id|stringformat:"s" == request.GET.competition %}selected{% endif %}>{{ competicion.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+        {% if competicion_seleccionada %}
+            <div class="text-center">
+                <img src="{{ competicion_seleccionada.logo_competicion.url }}" alt="Logo de la Competición" style="max-width: 200px; margin-bottom: 20px;" />
+            </div>
+        {% endif %}
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Posición</th>
+                    <th>Nombre</th>
+                    <th>Asistencias</th>
+                    <th>Equipo</th>
+                    <th>País</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for asistidor in asistidores %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ asistidor.alias }}</td>
+                    <td>{{ asistidor.asistencias }}</td>
+                    <td><img src="{% static asistidor.equipo_logo %}" alt="Logo del Equipo" style="height:50px;"></td>
+                    <td><img src="{% static asistidor.logo_bandera %}" alt="Bandera" style="height:30px;"></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5">No hay asistidores disponibles.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+{% endblock %}

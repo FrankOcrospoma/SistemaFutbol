@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+
+{% block title %} Competencias - Sistema de Gestion de Futbol {% endblock %}
+            
+{% block content %}
+            
+    <!-- Section Title -->
+    <div class="section-title" style="background:url(/static/img/qatar2.webp)">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    <h1>Tabla de posiciones</h1>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="breadcrumbs">
+                        <ul>
+                            <li><a href="index.html">Home</a></li>
+                            <li>Inner Page</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Section Title -->
+
+    <!-- Section Area - Content Central -->
+    <section class="content-info">
+        <div class="container paddings-mini">
+            <div class="row">
+                <div class="col-lg-12">
+                    {% for grupo_id, equipos_info in equipos_por_grupo_info.items %}
+                        {% for grupo_nombre in listar_grupos_fase_grupos %}
+                                {% if forloop.counter == grupo_id%}
+                                    <h1>{{ grupo_nombre }}</h1>
+                                {% endif %}
+                        {% endfor %}
+                  
+                             
+                        <table class="table-striped table-responsive table-hover result-point">
+                            <thead class="point-table-head">
+                                <tr>
+                                    <th class="text-left">POSICION</th>
+                                    <th class="text-left">EQUIPO</th>
+                                    <th class="text-center">P</th>
+                                    <th class="text-center">G</th>
+                                    <th class="text-center">E</th>
+                                    <th class="text-center">P</th>
+                                    <th class="text-center">GF</th>
+                                    <th class="text-center">GE</th>
+                                    <th class="text-center">+/-</th>
+                                    <th class="text-center">PTS</th>
+                                </tr>
+                            </thead>
+
+                            <tbody class="text-center">
+                                {% for equipo_info in equipos_info %}
+                                    <tr>
+                                        <td class="text-left number">{{ equipo_info.posicion }}</td>
+                                        <td class="text-left">
+                                            <img src="{{ equipo_info.logo }}" alt=""><span>{{ equipo_info.nombre }}</span>
+                                        </td>
+                                        <td>{{ equipo_info.partidos_jugados }}</td>
+                                        <td>{{ equipo_info.ganados }}</td>
+                                        <td>{{ equipo_info.empatados }}</td>
+                                        <td>{{ equipo_info.perdidos }}</td>
+                                        <td>{{ equipo_info.goles_favor }}</td>
+                                        <td>{{ equipo_info.goles_contra }}</td>
+                                        <td>{{ equipo_info.diferencia_goles }}</td>
+                                        <td>{{ equipo_info.puntos }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endfor %}
+                 
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- End Newsletter -->
+
+{% endblock %}

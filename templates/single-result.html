@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+
+{% block title %} Competencias - Sistema de Gestion de Futbol {% endblock %}
+            
+{% block content %}            
+            
+            <!-- Section Title -->
+            <div class="section-title single-result" style="background:url(/static/img/qatar2.webp)">
+                <div class="container">
+                    <div class="row">
+                        <!-- Result Location -->
+                        <div class="col-lg-12">
+                            <div class="result-location">
+                                <ul>
+                                    <li>
+                                       {{encuentro.fecha}}
+                                    </li>
+
+                                    <li>
+                                        <i class="fa fa-map-marker" aria-hidden="true"></i>
+                                      {{estadio.nombre}}
+                                    </li>
+                                    <li>CAPACIDAD: {{estadio.capacidad}}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Result Location -->
+
+                    <!-- Result -->
+                    <div class="row">
+                        <div class="col-md-5 col-lg-5">
+                            <div class="team right">
+                                <div class="col-md-3 ">
+                                    <img src="{{ equipo_a.logo.url }}" alt="club-logo" >
+                                <center><a href="single-team.html">{{equipo_a.nombre}}</a></center>
+                                </div>                              
+                            </div>
+                        </div>
+
+                        <div class="col-md-2 col-lg-2">
+                            <div class="result-match">
+                                {{jugar_encuentro.resultado_goles_local}} : {{jugar_encuentro.resultado_goles_visita}}
+                            </div>
+
+                            <div class="live-on">
+                                <a href="#">
+                                    En vivo
+                                    <img src="img/img-theme/espn.gif" alt="">
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="col-md-5 col-lg-5">
+                            <div class="team right">
+                                <div class="col-md-3">
+                                    <img src="{{ equipo_b.logo.url }}" alt="club-logo">
+                                <center><a href="single-team.html">{{equipo_b.nombre}}</a></center>
+                                </div>                                
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Result -->
+
+                    <!-- <div class="row">
+                        <div class="col-lg-12">
+                            <div class="timeline-result">
+                                <div class="team-timeline">
+                                    <img src="img/clubs-logos/colombia.png" alt="club-logo">
+                                    <a href="single-team.html">Col</a>
+                                </div>
+                                <ul class="timeline">
+                                  <li class="card-result bottom goal" style="left:10%" data-placement="top" data-trigger="hover" data-toggle="popover" title="Goal" data-content="10. James Rodriguez">
+                                       10'
+                                   </li>
+
+                                   <li class="card-result top change" style="left:20%" data-placement="bottom" data-trigger="hover" data-toggle="popover" title="Player Change" data-content="10. James Rodriguez for 9. Falcao Garcia">
+                                       20'
+                                   </li>
+
+                                   <li class="card-result top red" style="left:31%" data-placement="bottom" data-trigger="hover" data-toggle="popover" title="Yellow card" data-content="10. James Rodriguez">
+                                       31'
+                                   </li>
+
+                                   <li class="card-result top goal" style="left:40%" data-placement="bottom" data-trigger="hover" data-toggle="popover" title="Goal" data-content="10. James Rodriguez">
+                                       40'
+                                   </li>
+
+                                   <li class="card-result top yellow" style="left:65%"  data-placement="bottom" data-trigger="hover" data-toggle="popover" title="Yellow card" data-content="10. James Rodriguez">
+                                        65'
+                                    </li>
+
+                                    <li class="card-result bottom yellow" style="left:50%" data-placement="top" data-trigger="hover" data-toggle="popover" title="Yellow card" data-content="10. James Rodriguez">
+                                        50'
+                                    </li>
+
+                                    <li class="card-result top red" style="left:65%" data-placement="bottom" data-trigger="hover" data-toggle="popover" title="Yellow card" data-content="10. James Rodriguez">
+                                        65'
+                                    </li>
+
+                                    <li class="card-result bottom yellow" style="left:80%" data-placement="top" data-trigger="hover" data-toggle="popover" title="Yellow card" data-content="10. James Rodriguez">
+                                        80'
+                                    </li>
+
+                                    <li class="card-result top goal" style="left:90%" data-placement="bottom" data-trigger="hover" data-toggle="popover" title="Goal" data-content="10. James Rodriguez">
+                                       90'
+                                   </li>
+                                </ul>
+                                <div class="team-timeline">
+                                    <img src="img/clubs-logos/arg.png" alt="club-logo">
+                                    <a href="single-team.html">Arg</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+
+                </div>
+            </div>
+            <!-- End Section Title -->
+
+            <!-- Section Area - Content Central -->
+            <section class="content-info">
+
+                <!-- Single Team Tabs -->
+                <div class="single-team-tabs">
+                   <div class="container">
+                        <div class="row">
+                            <!-- Left Content - Tabs and Carousel -->
+                            <div class="col-xl-12 col-md-12">
+                                <!-- Nav Tabs -->
+                                <ul class="nav nav-tabs" id="myTab">
+                                   <li class="active"><a href="#summary" data-toggle="tab">Antes del Partido</a></li>
+                                   <li><a href="#stats" data-toggle="tab">Despues del Partido</a></li>
+                                </ul>
+                                <!-- End Nav Tabs -->
+                            </div>
+
+                            <div class="col-lg-12">
+                                <!-- Content Tabs -->
+                                <div class="tab-content">
+                                    <!-- Tab One - Sumary -->
+                                    <div class="tab-pane active" id="summary">
+
+                                        <div class="panel-box padding-b">
+                                            <h6>Arbitros del encuentro:</h6>
+                                            <ul>
+                                                {% for a in arbitros %}
+                                                <li> {{a.apellido}}, {{a.nombre}}<i class="" aria-hidden="true"></i></li>
+                                                {% endfor %}
+                                            </ul>                                           
+                                       </div>
+                                       <div class="panel-box padding-b">
+                                        <h6>Alineaciones - {{equipo_a.nombre}} :</h6>
+                                        
+                                        <div class="row">
+                                            <div class="col-2">
+                                                <ul>
+                                                    {% for pa in personas_alineacion_a %}
+                                                    <li> {{pa.alias}} {{pa.}}<i class="" aria-hidden="true"></i></li>
+                                                    {% endfor %}
+                                                </ul>        
+                                            </div>
+                                        </div>
+                                                                          
+                                        </div>
+                                        <div class="panel-box padding-b">
+                                            <h6>Alineaciones - {{equipo_b.nombre}} :</h6>
+                                                <ul>
+                                                    {% for pb in personas_alineacion_b %}
+                                                    <li> {{pb.alias}}<i class="" aria-hidden="true"></i></li>
+                                                    {% endfor %}
+                                                </ul>                                           
+                                            </div>
+                                        </div>
+                                    <!-- Tab One - Sumary -->
+
+                                    <!-- Tab Two - stats -->
+                                    <div class="tab-pane" id="stats">
+                                        <h6>Lista de goles en el partido:</h6>
+                                        <ul>
+                                            {% for eg in encuentro_goles %}
+                                            <li>{{eg.persona_id}} - {{eg.tiempo}}' <i class="fa fa-futbol-o" aria-hidden="true" style="color: black"></i></li>
+                                            {% endfor %}
+                                        </ul>
+                                        <!-- End Result -->
+
+                                        <h6>Faltas del partido:<h6>
+                                        <ul>
+                                            <li>Tarjetas Amarillas:
+                                                {% for ea in encuentro_tarjetasA %}
+                                                <ul>
+                                                    <li>{{ea.persona_id}} - {{ea.tiempo}}' <i class="fa-sharp fa-solid fa-square"  style="color: yellow; background:yellow"></i></li>
+                                                </ul>
+                                                {% endfor %}
+                                            </li>
+                                            <li>Tarjetas Rojas:
+                                                {% for er in encuentro_tarjetasR %}
+                                                <ul>
+                                                    <li>{{er.persona_id}} - {{er.tiempo}}' <i class="fa-sharp fa-solid fa-square" style="color: red; background: red"></i></li>
+                                                </ul>
+                                                {% endfor %}
+                                            </li>
+                                        </ul>
+                                        <!-- End Faltas -->
+                                    </div>
+
+
+                                    <!-- End Tab Two - stats -->
+                                </div>
+                                <!-- Content Tabs -->
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <!-- Single Team Tabs -->
+
+            </section>
+            <!-- End Section Area -  Content Central -->
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+{% block title %} Lista tabla de posiciones {% endblock %}
+{% block content %}
+    <!-- Reportegrupos.html -->
+    <form method="get" action="{% url 'reporte_tabla_posiciones' %}">
+        <label for="competicion_id">Selecciona una competición:</label>
+        <select name="competicion_id" id="competicion_id">
+            <option value="" {% if not competicion_seleccionada %}selected{% endif %}>Todas las competiciones</option>
+            {% for competicion_item in competiciones %}
+                <option value="{{ competicion_item.id }}" {% if competicion_item.id == competicion_seleccionada.id %}selected{% endif %}>
+                    {{ competicion_item.nombre }}
+                </option>
+            {% endfor %}
+        </select>
+        <button type="submit">Filtrar</button>
+    </form>
+
+    <h1>{% if competicion_seleccionada %}{{ competicion_seleccionada.nombre }}{% else %}Todas las competiciones{% endif %}</h1>
+
+    <h2>Grupos:</h2>
+    <ul>
+        {% for grupo in grupos %}
+            <li>{{ grupo.nombre_grupo }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Tabla de Posiciones:</h2>
+    <table>
+        <thead>
+            <!-- Encabezados de la tabla, por ejemplo: -->
+            <th>Equipo</th>
+            <th>Puntos</th>
+            <!-- Otros encabezados según tu modelo de tabla de posiciones -->
+        </thead>
+        <tbody>
+            {% for posicion in detalles_grupos %}
+                <tr>
+                    <td>{{ posicion.equipo.nombre }}</td>
+                    <td>{{ posicion.puntos }}</td>
+                    <!-- Otros campos según tu modelo de tabla de posiciones -->
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

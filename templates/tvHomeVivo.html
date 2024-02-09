@@ -1,0 +1,113 @@
+
+{% load i18n static %}
+{% block content %}
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
+
+<!-- Material Icons -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+
+
+<section class="content-info">
+    <div class="col-lg-12">
+
+        <div class="recent-results results-page">
+            <div class="info-results">
+                <ul>
+                    {% for item in encuentrosE %}
+                    <li>
+                        <div class="head" style="display: flex; align-items: center; justify-content: space-between;">
+                            <a href="{% url 'contextoTVhomeEncuentro' id=item.encuentro.encuentro_id %}" class="ver-button encuentro-link" style="font-size: 12px;">▶ Ver</a>
+                            <span class="grupo" >{{ item.encuentro.fase }}  {% if item.encuentro.grupo %} [{{ item.encuentro.grupo }}]{% endif %}</span>
+                            <span class="date live-text">En vivo</span>
+
+
+                        </div>
+                        
+                        <div class="goals-result" style="align-items: center">
+                            <a href="single-team.html" style="margin-top:0px; width: 40%">
+                                {% if item.encuentro.equipo_local.tipo_equipo_id.descripcion == 'CLUB' %}
+                                    <img style="border: none;" src="{{ item.encuentro.equipo_local.logo.url }}" alt=""  loading="lazy">
+                                    
+                                {% else %}
+                                    <img src="{{ item.encuentro.equipo_local.sede_id.ciudad_id.pais_id.logo_bandera.url }}" alt=""  loading="lazy">
+                                   
+                                {% endif %}
+                                {{ item.encuentro.equipo_local.nombre }}
+                            </a>
+                            <span class="goals">
+                                <b>{{ item.golesLocal }}</b> - <b>{{ item.golesVisita }}</b>
+                            </span>
+                            <a href="single-team.html" style="margin-top:0px; width: 40%">
+                                {% if item.encuentro.equipo_visita.tipo_equipo_id.descripcion == 'CLUB' %}
+                                    <img style="border: none;" src="{{ item.encuentro.equipo_visita.logo.url }}" alt="" 
+                                    loading="lazy"> 
+                                   
+                                {% else %}
+                                    <img src="{{ item.encuentro.equipo_visita.sede_id.ciudad_id.pais_id.logo_bandera.url }}" alt="" loading="lazy"> 
+                                    
+                                {% endif %}
+                                {{ item.encuentro.equipo_visita.nombre }}
+                            </a>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</section>
+<style>
+    /* ... (tu estilo existente) ... */
+
+    .encuentro-link {
+        background-color: #09ff00;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 7px 20px;
+        text-decoration: none;
+        transition: background-color 0.2s;
+    }
+
+    .encuentro-link:hover {
+        color: #fff;
+        background-color: #078503;
+    }
+
+    /* Nuevo estilo para el texto "En vivo" con subrayado y efecto de movimiento realista */
+    .live-text {
+        position: relative;
+        display: inline-block;
+    }
+
+    .live-text::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -3px; /* Ajusta la posición del subrayado */
+        width: 100%;
+        height: 2px; /* Altura del subrayado */
+        background-color: #09ff00; /* Mismo color que el botón "En vivo" */
+        display: block;
+        animation: liveTextAnimation 3s infinite linear; /* Ajusta la duración de la animación */
+        transform-origin: 0% 100%; /* Ajusta el punto de origen de la transformación */
+    }
+
+    @keyframes liveTextAnimation {
+        0%, 100% {
+            transform: scaleX(0);
+        }
+        25%, 75% {
+            transform: scaleX(1);
+        }
+        50% {
+            transform: scaleX(0);
+            transform-origin: 100% 50%; /* Cambia el punto de origen para la siguiente iteración */
+        }
+    }
+</style>
+{% endblock %}

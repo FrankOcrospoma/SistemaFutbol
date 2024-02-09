@@ -1,0 +1,186 @@
+{% load static %}
+
+<!-- Header -->
+<header>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
+
+    <!-- End headerbox -->
+    <div class="headerbox">
+        <div class="container">
+            <div class="row justify-content-between align-items-center">
+                <!-- Logo -->
+                <div class="col">
+                    <div class="logo">
+                        <a href="/" title="Return Home">
+                            <img src="{% static 'images/luu.png' %}" alt="Logo" class="logo_img">
+                        </a>
+                    </div>
+                </div>
+                <!-- End Logo -->
+
+                <!-- Adds Header -->
+                <div class="col">
+                    <div class="adds">
+                        <a href="http://themeforest.net/user/iwthemes/portfolio?ref=iwthemes" target="_blank">
+                            <img src="img/adds/banner.webp" alt="" class="img-responsive">
+                        </a>
+                    </div>
+ 
+                    <!-- Call Nav Menu -->
+                    <a class="mobile-nav" href="#mobile-nav"><i class="fa fa-bars"></i></a>
+                    <!-- End Call Nav Menu -->
+                </div>
+                <!-- End Adds Header -->
+                             <!-- User Login Button -->
+                             <div class="col-lg-2 col-md-5 col-sm-5">
+                                <div class="info-links">
+                                    <ul>
+                                        <li><a href="/admin/login"><i class="fas fa-user"></i> Iniciar Sesión</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+            </div>
+        </div>
+    </div>
+    <!-- End headerbox -->
+</header>
+
+<!-- Mobile Nav -->
+<div id="mobile-nav" style="display: none;" class="mobile-nav-container">
+    <div class="mobile-nav-content">
+        <ul class="sf-menu" id="mobile-menu">
+            <!-- Insert your mobile menu items here -->
+            <li><a href="/">Inicio</a></li>
+            <li><a href="/competencias">Competencias</a></li>
+            <li><a href="/contacto">Contacto</a></li>
+            <li><a href="/competencias">Tv en vivo</a></li>
+            <li class="current">
+                <a href="/">Encuentros</a>
+                <ul class="sub-current">
+                  {% for c_n in competencias_nav %}
+                  <li>
+                    <a href="/competencias/{{c_n.nombre.lower}}/encuentros">{{ c_n.nombre | title}}</a>
+                  </li>
+                  {% endfor %}
+                </ul>
+            </li>
+            <li class="current">
+                <a href="#">Reportes</a>
+                <ul class="sub-current">
+                    <li class="current">
+                        <a href="#">Reporte de Jugadores</a>
+                        <ul class="sub-current">
+                            <li>
+                              <a href="{% url 'reporte_jugadores' %}">Reporte de jugadores por competición</a>
+                            </li>
+                            <li><a href="{% url 'lista_personas' %}">Personas por Tipo y Pais</a></li>
+                        </ul>
+                    </li>
+                    <!-- Nueva categoría Reporte Sedes aquí -->
+                    <li class="current">
+                        <a href="">Reporte Sedes</a>
+                        <ul class="sub-current">
+                            <!-- Las opciones para Reporte Sedes irían aquí -->
+                            <li><a href="/reporte/sedes">Sedes por competición</a></li>
+                        </ul>
+                    </li>
+                    <li class="current">
+                      <a href="#">Reporte Equipo</a>
+                      <ul class="sub-current">
+                          <li><a href="{% url 'lista_equipos' %}">Equipos por competición y fase</a></li>
+                      </ul>
+                  </li>
+                  <li class="current">
+                    <a href="#">Reporte Organizaciones</a>
+                    <ul class="sub-current">
+                        <li><a href="/reporte/organizaciones">Tipo Organizaciones</a></li>
+                        <li><a href="/reporte/organizacion"> Organización</a></li>
+                    </ul>
+                </li>
+                <li class="current">
+                  <a href="#">Tabla De Posiciones</a>
+                  <ul class="sub-current scrollable-list">
+                    {% for c_n in competencias_nav %}
+                      <li><a href="/reporte_tabla_posiciones/{{c_n.nombre.lower}}" value="Copa Mundial Qatar 2022">{{c_n.nombre.lower}}</a></li>
+                      {% endfor %}
+                  </ul>
+              </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+<!-- End Mobile Nav -->
+
+<script>
+    // JavaScript para mostrar/ocultar el menú móvil
+    document.addEventListener('DOMContentLoaded', function () {
+        var mobileNav = document.getElementById('mobile-nav');
+
+        // Evento de clic en el botón de menú móvil
+        document.querySelector('.mobile-nav').addEventListener('click', function () {
+            if (mobileNav.style.display === 'block') {
+                mobileNav.style.display = 'none';
+            } else {
+                mobileNav.style.display = 'block';
+            }
+        });
+
+        // Evento de clic en elementos del menú móvil para ocultar el menú después de hacer clic
+        document.body.addEventListener('click', function (event) {
+            if (!event.target.closest('#mobile-nav') && !event.target.closest('.mobile-nav')) {
+                mobileNav.style.display = 'none';
+            }
+        });
+    });
+</script>
+<style>
+    .mobile-nav-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #fff; /* Cambia el color de fondo según tus preferencias */
+        z-index: 1000;
+        display: none;
+    }
+
+    .mobile-nav-content {
+        padding: 20px;
+        text-align: center;
+    }
+
+    .mobile-nav-content ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .mobile-nav-content li {
+        width: 100%; /* Ocupa todo el ancho disponible */
+        margin-bottom: 10px;
+    }
+
+    .mobile-nav-content a {
+        display: block; /* Hace que los enlaces ocupen todo el ancho disponible */
+        text-decoration: none;
+        color: #333; /* Cambia el color del texto según tus preferencias */
+        font-size: 18px; /* Cambia el tamaño de la fuente según tus preferencias */
+        font-weight: bold;
+    }
+        /* Agrega estilos según tus preferencias para el ícono de usuario y el botón de inicio de sesión */
+        .info-links {
+        text-align: right;
+    }
+
+    .info-links a {
+        color: #333; /* Cambia el color del texto según tus preferencias */
+        font-size: 16px; /* Cambia el tamaño de la fuente según tus preferencias */
+        text-decoration: none;
+    }
+
+    .info-links a i {
+        margin-right: 5px; /* Ajusta el espacio entre el ícono y el texto según tus preferencias */
+    }
+</style>
