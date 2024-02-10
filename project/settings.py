@@ -28,8 +28,8 @@ DEBUG = True
 # ALLOWED_HOSTS = ['127.0.0.1','localhost']
 # settings.py
 
-ALLOWED_HOSTS = ['sistemafutbol.up.railway.app', 'otrodominio.com']  # Agrega 'sistemafutbol.up.railway.app' y otros dominios permitidos según sea necesario
-CSRF_TRUSTED_ORIGINS = ['https://pryfutbolisticodjango-production.up.railway.app']
+ALLOWED_HOSTS = ['sistemafutbol.up.railway.app', '127.0.0.1']  # Agrega 'sistemafutbol.up.railway.app' y otros dominios permitidos según sea necesario
+CSRF_TRUSTED_ORIGINS = ['https://sistemafutbol.up.railway.app']
 
 # Application definition
 
