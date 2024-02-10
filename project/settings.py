@@ -26,7 +26,9 @@ SECRET_KEY = 'django-insecure-!2gb-$ns@@#8m5)^ij!uzm1hgm)+$3acxb36pc64rx(p^201ly
 DEBUG = True
 
 # ALLOWED_HOSTS = ['127.0.0.1','localhost']
-ALLOWED_HOSTS = ['pryfutbolisticodjango-production.up.railway.app','127.0.0.1']
+# settings.py
+
+ALLOWED_HOSTS = ['sistemafutbol.up.railway.app', 'otrodominio.com']  # Agrega 'sistemafutbol.up.railway.app' y otros dominios permitidos según sea necesario
 CSRF_TRUSTED_ORIGINS = ['https://pryfutbolisticodjango-production.up.railway.app']
 
 # Application definition
